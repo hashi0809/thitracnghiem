@@ -231,6 +231,12 @@ html{scroll-behavior:smooth}
 /* KaTeX: công thức toán hiển thị đẹp như đề in */
 .katex{color:inherit;font-size:1.04em}
 .katex-display{margin:8px 0;overflow-x:auto;overflow-y:hidden;padding:2px}
+
+/* Ảnh câu hỏi */
+.qimg{width:100%;height:auto;border-radius:12px;border:1px solid var(--line);margin:8px 0;display:block;background:#fff}
+.imgdrop{border:2px dashed #a5b4fc;border-radius:14px;padding:20px;text-align:center;margin-top:12px;cursor:pointer;background:rgba(255,255,255,.4);transition:transform .2s,background .2s}
+.imgdrop.over{border-color:#4f46e5;background:rgba(79,70,229,.08);transform:scale(1.01)}
+body.dark .imgdrop{background:rgba(255,255,255,.06);border-color:#6366f1}
 </style>
 </head>
 <body class="fs-1">
@@ -282,6 +288,8 @@ html{scroll-behavior:smooth}
 <textarea id="pasteText" rows="7" placeholder="Câu 1: ...?&#10;A. ...&#10;B. ...&#10;Đáp án: A"></textarea>
 <button id="parsePasteBtn" style="margin-top:10px">Tách câu hỏi từ nội dung đã dán</button>
 </div>
+<div id="imgDrop" class="imgdrop">📷 Thả ảnh đề vào đây hoặc bấm để chọn<br><span class="muted" style="font-size:13px">Mỗi ảnh thành 1 câu hỏi, làm bài bằng nút A/B/C/D, chọn đáp án đúng ở bước xem trước</span></div>
+<input type="file" id="imgInput" accept="image/*" multiple class="hidden">
 <div id="importMsg" style="margin-top:12px"></div>
 </section>
 
@@ -497,11 +505,24 @@ function renderPreview(){
   '<label>Đáp án đúng</label><select data-idx="'+i+'" data-field="answer"><option value="-1">-- Chưa chọn --</option>'+letters.map((L,j)=>'<option value="'+j+'" '+(q.answer===j?'selected':'')+'>'+L+'</option>').join('')+'</select>'+
   '<label>Giải thích</label><input data-idx="'+i+'" data-field="explanation" value="'+esc(q.explanation||'')+'">'+
   '<label>Chương / Chủ đề</label><input data-idx="'+i+'" data-field="chapter" value="'+esc(q.chapter||'')+'">'+
+  '<label>Ảnh câu hỏi</label>'+(q.img?'<img class="qimg" src="'+esc(q.img)+'" style="max-height:140px;width:auto"><button class="secondary small" data-delimg="'+i+'">Xóa ảnh</button>':'<input type="file" accept="image/*" data-imgidx="'+i+'">')+
   '<button class="red small" data-del="'+i+'" style="margin-top:10px">Xóa câu này</button></div>').join('');
 }
 $('previewList').addEventListener('input', e=>{ let idx=parseInt(e.target.dataset.idx); if(isNaN(idx)) return; let f=e.target.dataset.field; if(f==='q') pending[idx].q=e.target.value; else if(f && f.startsWith('opt')) pending[idx].options[parseInt(f.slice(3),10)]=e.target.value; else if(f) pending[idx][f]=e.target.value; });
-$('previewList').addEventListener('change', e=>{ let idx=parseInt(e.target.dataset.idx); if(!isNaN(idx) && e.target.dataset.field==='answer') pending[idx].answer=parseInt(e.target.value,10); });
-$('previewList').addEventListener('click', e=>{ if(e.target.dataset.del!==undefined){ pending.splice(parseInt(e.target.dataset.del,10),1); renderPreview(); } });
+$('previewList').addEventListener('change', async e=>{
+  let idx=parseInt(e.target.dataset.idx);
+  if(!isNaN(idx) && e.target.dataset.field==='answer') pending[idx].answer=parseInt(e.target.value,10);
+  if(e.target.dataset.imgidx!==undefined && e.target.files && e.target.files[0]){
+    let ii=parseInt(e.target.dataset.imgidx,10);
+    try{ pending[ii].img=await compressImage(e.target.files[0],900,0.72); }
+    catch(err){ alert('Đọc ảnh bị lỗi.'); }
+    renderPreview();
+  }
+});
+$('previewList').addEventListener('click', e=>{
+  if(e.target.dataset.del!==undefined){ pending.splice(parseInt(e.target.dataset.del,10),1); renderPreview(); }
+  if(e.target.dataset.delimg!==undefined){ pending[parseInt(e.target.dataset.delimg,10)].img=''; renderPreview(); }
+});
 $('confirmBtn').addEventListener('click', ()=>{
   let bad=pending.findIndex(q=>q.answer<0 || !q.q.trim() || q.options.filter(o=>o.trim()).length<2);
   if(bad>=0){ alert('Câu '+(bad+1)+' chưa đủ thông tin hoặc chưa chọn đáp án đúng.'); return; }
@@ -525,6 +546,43 @@ $('fileInput').addEventListener('change', async e=>{
   }catch(err){ $('importMsg').innerHTML='<div class="error">Đọc file bị lỗi: '+esc(err.message)+'</div>'; }
 });
 $('pasteBtn').addEventListener('click', ()=>$('pasteBox').classList.toggle('hidden'));
+// Nén ảnh về JPEG gọn nhẹ trước khi lưu
+function compressImage(file, maxW, quality){
+  return new Promise((res, rej)=>{
+    const img=new Image();
+    img.onload=()=>{
+      try{
+        const scale=Math.min(1, maxW/img.width);
+        const c=document.createElement('canvas');
+        c.width=Math.max(1, Math.round(img.width*scale)); c.height=Math.max(1, Math.round(img.height*scale));
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        URL.revokeObjectURL(img.src);
+        res(c.toDataURL('image/jpeg', quality||0.72));
+      }catch(e){ rej(e); }
+    };
+    img.onerror=rej;
+    img.src=URL.createObjectURL(file);
+  });
+}
+// Thả/chọn ảnh -> mỗi ảnh thành 1 câu hỏi
+$('imgDrop').addEventListener('click', ()=>$('imgInput').click());
+['dragover','dragenter'].forEach(ev=>$('imgDrop').addEventListener(ev, e=>{ e.preventDefault(); $('imgDrop').classList.add('over'); }));
+['dragleave','drop'].forEach(ev=>$('imgDrop').addEventListener(ev, e=>{ e.preventDefault(); $('imgDrop').classList.remove('over'); }));
+$('imgDrop').addEventListener('drop', e=>{ if(e.dataTransfer && e.dataTransfer.files.length) addImageQuestions(e.dataTransfer.files); });
+$('imgInput').addEventListener('change', e=>{ if(e.target.files.length) addImageQuestions(e.target.files); e.target.value=''; });
+async function addImageQuestions(files){
+  let n=0;
+  for(const f of files){
+    if(!f.type || !f.type.startsWith('image/')) continue;
+    try{ const url=await compressImage(f, 1000, 0.72); pending.push({q:'',options:['','','',''],answer:-1,explanation:'',chapter:'',difficult:false,img:url}); n++; }
+    catch(e){}
+  }
+  if(!n){ $('importMsg').innerHTML='<div class="error">Không đọc được ảnh nào.</div>'; return; }
+  pendingName=$('subjectName').value.trim()||'Đề từ ảnh';
+  renderPreview(); $('previewSection').classList.remove('hidden');
+  $('importMsg').innerHTML='<div class="ok">Đã thêm '+n+' ảnh thành câu hỏi. Chọn đáp án đúng cho từng câu ở bước xem trước rồi bấm “Lưu thành môn học”.</div>';
+  $('previewSection').scrollIntoView({behavior:'smooth'});
+}
 $('parsePasteBtn').addEventListener('click', ()=>loadParsed(parseText($('pasteText').value), $('subjectName').value.trim()||'Môn dán tay'));
 $('searchInput').addEventListener('input', renderSubjects);
 $('clearBtn').addEventListener('click', ()=>{ if(!confirm('Xóa toàn bộ môn học và lịch sử đã lưu?')) return; localStorage.removeItem(storeKey); location.reload(); });
@@ -569,7 +627,8 @@ function renderQuiz(animate){
   let q=session[currentIndex];
   $('quizProgressText').textContent='Câu '+(currentIndex+1)+' / '+session.length+' (Đã làm '+answers.filter(a=>a!==null).length+')';
   $('progressBar').style.transform='scaleX('+((currentIndex+1)/session.length)+')';
-  let html='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 style="margin:0">Câu '+(currentIndex+1)+': '+esc(q.q)+'</h3><div style="display:flex;gap:8px"><button class="secondary small" id="flagBtn">'+(flagged[currentIndex]?'🚩 Đã đánh dấu':'🏳️ Đánh dấu')+'</button><button class="secondary small" id="starBtn">'+(q.difficult?'⭐ Câu khó':'☆ Câu khó')+'</button></div></div>';
+  let html='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 style="margin:0">Câu '+(currentIndex+1)+(q.q?': '+esc(q.q):'')+'</h3><div style="display:flex;gap:8px"><button class="secondary small" id="flagBtn">'+(flagged[currentIndex]?'🚩 Đã đánh dấu':'🏳️ Đánh dấu')+'</button><button class="secondary small" id="starBtn">'+(q.difficult?'⭐ Câu khó':'☆ Câu khó')+'</button></div></div>';
+  if(q.img) html+='<img class="qimg" src="'+esc(q.img)+'" alt="Ảnh câu hỏi">';
   if(q.chapter) html+='<span class="badge">'+esc(q.chapter)+'</span>';
   q.options.forEach((opt,i)=>{ let cls='opt'; if(mode==='exam' && answers[currentIndex]===i) cls+=' selected'; if(mode==='review' && reviewLocked[currentIndex]){ if(i===q.answer) cls+=' correct'; else if(answers[currentIndex]===i) cls+=' wrong'; } html+='<button class="opt '+cls+'" data-opt="'+i+'"><span class="opt-letter">'+letters[i]+'</span><span>'+esc(opt)+'</span></button>'; });
   if(mode==='review' && reviewLocked[currentIndex]){ html+='<p class="muted">'+(answers[currentIndex]===q.answer?'✅ Trả lời đúng.':'❌ Trả lời sai. Đáp án đúng là '+letters[q.answer]+'.')+'</p>'; if(q.explanation) html+='<div class="ok"><b>Giải thích:</b> '+esc(q.explanation)+'</div>'; }
@@ -600,7 +659,7 @@ function submitQuiz(){
   $('resultSummary').textContent='Đúng '+correct+' câu, sai '+wrong+' câu, chưa làm '+blank+' câu trên tổng '+session.length+' câu.';
   $('resultMeta').textContent='Môn: '+lastResultSubject()+' • Chế độ: '+(mode==='exam'?'Thi thử':'Ôn tập');
   let wrongItems=lastResult.items.filter(x=>x.mine!==x.q.answer);
-  $('wrongList').innerHTML = !wrongItems.length ? '<div class="ok" style="margin-top:14px">🎉 Làm đúng hết, không có câu sai.</div>' : '<h3>Các câu sai / chưa làm</h3>' + wrongItems.map(x=>'<div class="qcard"><b>'+esc(x.q.q)+'</b><div>Bạn chọn: '+(x.mine===null?'Chưa chọn':letters[x.mine]+'. '+esc(x.q.options[x.mine]))+'</div><div style="color:#059669;font-weight:700">Đáp án đúng: '+letters[x.q.answer]+'. '+esc(x.q.options[x.q.answer])+'</div>'+(x.q.explanation?'<div class="muted">Giải thích: '+esc(x.q.explanation)+'</div>':'')+'</div>').join('');
+  $('wrongList').innerHTML = !wrongItems.length ? '<div class="ok" style="margin-top:14px">🎉 Làm đúng hết, không có câu sai.</div>' : '<h3>Các câu sai / chưa làm</h3>' + wrongItems.map(x=>'<div class="qcard">'+(x.q.img?'<img class="qimg" src="'+esc(x.q.img)+'" alt="Ảnh câu hỏi">':'')+'<b>'+esc(x.q.q)+'</b><div>Bạn chọn: '+(x.mine===null?'Chưa chọn':letters[x.mine]+'. '+esc(x.q.options[x.mine]))+'</div><div style="color:#059669;font-weight:700">Đáp án đúng: '+letters[x.q.answer]+'. '+esc(x.q.options[x.q.answer])+'</div>'+(x.q.explanation?'<div class="muted">Giải thích: '+esc(x.q.explanation)+'</div>':'')+'</div>').join('');
   tex();
 }
 function lastResultSubject(){ return lastSubjectName || 'Đề nhanh'; }
@@ -622,9 +681,33 @@ function sampleSubjects(){
   let s1=parseText('Câu 1: Thủ đô của Việt Nam là gì?\nA. Hà Nội\nB. TP. Hồ Chí Minh\nC. Đà Nẵng\nD. Huế\nĐáp án: A\nGiải thích: Hà Nội là thủ đô.\n\nCâu 2: 2 + 3 bằng mấy?\nA. 4\nB. 5\nC. 6\nD. 7\nĐáp án: B\nGiải thích: 2 + 3 = 5.\n\nCâu 3: Nước nào có diện tích lớn nhất thế giới?\nA. Canada\nB. Trung Quốc\nC. Nga\nD. Mỹ\nĐáp án: C\n\nCâu 4: 10 chia 2 bằng mấy?\nA. 2\nB. 3\nC. 5\nD. 8\nĐáp án: C\n\nCâu 5: Sông nào dài nhất Việt Nam?\nA. Sông Hồng\nB. Sông Đồng Nai\nC. Sông Cửu Long\nD. Sông Đà\nĐáp án: B').questions;
   let s2=parseText('Câu 1: HTML viết tắt của gì?\nA. HyperText Markup Language\nB. HighText Machine Language\nC. Hyperlink Text Mode Language\nD. Home Tool Markup Language\nĐáp án: A\n\nCâu 2: CPU là gì?\nA. Bộ nhớ tạm\nB. Bộ xử lý trung tâm\nC. Ổ cứng\nD. Màn hình\nĐáp án: B\n\nCâu 3: RAM dùng để làm gì?\nA. Lưu trữ lâu dài\nB. Lưu trữ tạm thời khi máy đang chạy\nC. Kết nối mạng\nD. In ấn\nĐáp án: B\n\nCâu 4: 1 byte bằng bao nhiêu bit?\nA. 4\nB. 8\nC. 16\nD. 32\nĐáp án: B\n\nCâu 5: Phím tắt sao chép là gì?\nA. Ctrl + X\nB. Ctrl + V\nC. Ctrl + C\nD. Ctrl + Z\nĐáp án: C').questions;
   let s3=parseText('Câu 1: Dùng đa thức Taylor bậc 4 của $f(x) = \\sin(x)$ tại điểm $x = \\frac{\\pi}{2}$, tính xấp xỉ $\\sin\\left(\\frac{\\pi}{2} + 0{,}01\\right)$.\nA. $\\sin\\left(\\frac{\\pi}{2}+0{,}01\\right) \\approx 1 - \\frac{(0{,}01)^2}{2} + \\frac{(0{,}01)^4}{24}$\nB. $\\sin\\left(\\frac{\\pi}{2}+0{,}01\\right) \\approx 1 - (0{,}01)^2 - \\frac{(0{,}01)^4}{24}$\nC. $\\sin\\left(\\frac{\\pi}{2}+0{,}01\\right) \\approx 1 - (0{,}01)^2 + (0{,}01)^4$\nD. $\\sin\\left(\\frac{\\pi}{2}+0{,}01\\right) \\approx 1 + \\frac{(0{,}01)^2}{2} + \\frac{(0{,}01)^4}{24}$\nĐáp án: A\nGiải thích: $\\sin\\left(\\frac{\\pi}{2}+h\\right) = \\cos(h) \\approx 1 - \\frac{h^2}{2} + \\frac{h^4}{24}$ với $h = 0{,}01$.\n\nCâu 2: Cho $f(x) = x^3 + \\sin^2(3x) + 4\\operatorname{arcsin}^3(x) + \\ln\\left(1+\\frac{x}{3}\\right) + \\tan^2(x)$. Khi $x \\to 0$ thì:\nA. $f(x) \\sim \\frac{x}{3}$\nB. $f(x) \\sim 4x^2$\nC. $f(x) \\sim 5x^3$\nD. $f(x) \\sim 10x^2$\nĐáp án: A\nGiải thích: Số hạng trội nhất là $\\ln\\left(1+\\frac{x}{3}\\right) \\sim \\frac{x}{3}$ (bậc 1); các số hạng còn lại đều có bậc $\\geq 2$.\n\nCâu 3: Cho $f(x) = \\sqrt{x}$. Khai triển Taylor cấp 2 của $f(x)$ tại điểm $x = 1$ là:\nA. $f(x) = 2 - \\frac{x-1}{2} - \\frac{(x-1)^2}{8} + o((x-1)^2)$\nB. $f(x) = 1 + \\frac{x-1}{2} + \\frac{(x-1)^2}{8} + o((x-1)^2)$\nC. $f(x) = 1 - \\frac{x-1}{2} - \\frac{(x-1)^2}{8} + o((x-1)^2)$\nD. $f(x) = 1 + \\frac{x-1}{2} - \\frac{(x-1)^2}{8} + o((x-1)^2)$\nĐáp án: D\nGiải thích: $f(1) = 1$, $f\'(1) = \\frac{1}{2}$, $f\'\'(1) = -\\frac{1}{4}$ nên $f(x) \\approx 1 + \\frac{x-1}{2} - \\frac{(x-1)^2}{8}$.\n\nCâu 4: Cho $f(x) = \\ln(\\sin x)$, $0 < x < \\frac{\\pi}{2}$. Tính đạo hàm của $y = f(x)$ tại điểm $x = \\frac{\\pi}{4}$.\nA. $f\'\\left(\\frac{\\pi}{4}\\right) = -\\frac{\\sqrt{2}}{2}$\nB. $f\'\\left(\\frac{\\pi}{4}\\right) = \\frac{\\sqrt{2}}{2}$\nC. $f\'\\left(\\frac{\\pi}{4}\\right) = -1$\nD. $f\'\\left(\\frac{\\pi}{4}\\right) = 1$\nĐáp án: D\nGiải thích: $f\'(x) = \\frac{\\cos x}{\\sin x} = \\cot x$; $\\cot\\left(\\frac{\\pi}{4}\\right) = 1$.\n\nCâu 5: Cho $f(x) = x^3 + \\sin^2\\left(\\frac{x}{2}\\right) + 4\\operatorname{arcsin}^3(x) + \\ln^4(1+2x) + \\tan^2(x)$. Khi $x \\to 0$ thì:\nA. $f(x) \\sim 2x$\nB. $f(x) \\sim \\frac{5x^2}{4}$\nC. $f(x) \\sim 16x^4$\nD. $f(x) \\sim 5x^3$\nĐáp án: B\nGiải thích: $\\sin^2\\left(\\frac{x}{2}\\right) \\sim \\frac{x^2}{4}$ và $\\tan^2(x) \\sim x^2$ là hai số hạng trội nhất (bậc 2), tổng $\\sim \\frac{5x^2}{4}$.\n\nCâu 6: Cho hàm số $f(x) = 3x^5 + 2x + 5$. Đạo hàm của hàm ngược $y = f^{-1}(x)$ là:\nA. $(f^{-1})\'(x) = \\frac{1}{15x^4 + 2}$\nB. $(f^{-1})\'(x) = \\frac{1}{15y^4 + 2}$\nC. $(f^{-1})\'(x) = 15y^4 + 2$\nD. $(f^{-1})\'(x) = 15x^4 + 2$\nĐáp án: B\nGiải thích: $(f^{-1})\'(x) = \\frac{1}{f\'(y)} = \\frac{1}{15y^4 + 2}$, với $y = f^{-1}(x)$.\n\nCâu 7: Tìm đạo hàm $y\'(x)$ của hàm ẩn được cho bởi phương trình $x^2y + \\ln(xy) = 1$.\nA. $y\' = \\frac{y + 2x^2y^2}{x + x^3y}$\nB. $y\' = \\frac{y + 2x^2y^2}{x - x^3y}$\nC. $y\' = \\frac{-y + 2x^2y^2}{x + x^3y}$\nD. $y\' = \\frac{y - 2x^2y^2}{x + x^3y}$\nĐáp án: A\nGiải thích: Lưu ý đề in thiếu đáp án đúng. Tính đúng: đặt $F = x^2y + \\ln(xy) - 1$ thì $F\'_x = 2xy + \\frac{1}{x}$, $F\'_y = x^2 + \\frac{1}{y}$, $y\' = -\\frac{F\'_x}{F\'_y} = -\\frac{y + 2x^2y^2}{x + x^3y}$. Đáp án A là kết quả khi quên dấu trừ.\n\nCâu 8: Cho $f(x) = e^{3x}$. Khai triển Taylor tại $x = 0$ (khai triển Maclaurin) cấp 3 của $f(x)$ là:\nA. $f(x) = 1 + 3x + 9x^2 + 27x^3 + o(x^3)$\nB. $f(x) = 1 + x + x^2 + x^3 + o(x^3)$\nC. $f(x) = 1 + 3x + \\frac{9x^2}{2} + \\frac{9x^3}{2} + o(x^3)$\nD. $f(x) = 1 + 9x + 9x^2 + 9x^3 + o(x^3)$\nĐáp án: C\nGiải thích: $e^{3x} = 1 + 3x + \\frac{(3x)^2}{2!} + \\frac{(3x)^3}{3!} = 1 + 3x + \\frac{9x^2}{2} + \\frac{9x^3}{2}$.\n\nCâu 9: Cho hàm số $y = f(x)$ xác định bởi $x = \\sin^2(t)$, $y = 2\\tan(t)$ ($0 < t < \\frac{\\pi}{2}$). Tính $f\'(x)$. (Đề in ghi $f\'\'(x)$ nhưng cả 4 đáp án đều ghi $f\'(x)$.)\nA. $f\'(x) = \\frac{1}{\\sin t \\cdot \\cos^3 t}$\nB. $f\'(x) = \\sin t \\cdot \\cos^2 t$\nC. $f\'(x) = \\sin t \\cdot \\cos^3 t$\nD. $f\'(x) = \\frac{1}{\\sin t \\cdot \\cos^2 t}$\nĐáp án: A\nGiải thích: $x\'(t) = 2\\sin t \\cos t$, $y\'(t) = \\frac{2}{\\cos^2 t}$ nên $f\'(x) = \\frac{y\'}{x\'} = \\frac{1}{\\sin t \\cdot \\cos^3 t}$.\n\nCâu 10: Tích phân $I = \\int_0^{+\\infty} \\frac{dx}{1+x^2}$ bằng:\nA. $I = \\lim_{a \\to +\\infty} \\frac{1}{2}\\ln(a^2+1) = +\\infty$\nB. $I = \\lim_{a \\to +\\infty} \\operatorname{arctan}(-a) = \\frac{\\pi}{2}$\nC. $I = \\lim_{a \\to +\\infty} \\operatorname{arctan}(a) = \\frac{\\pi}{2}$\nD. $I = \\lim_{a \\to +\\infty} -\\frac{1}{2}\\ln(a^2+1) = -\\infty$\nĐáp án: C\nGiải thích: Nguyên hàm của $\\frac{1}{1+x^2}$ là $\\operatorname{arctan} x$; $\\lim_{a \\to +\\infty} \\operatorname{arctan}(a) = \\frac{\\pi}{2}$.\n\nCâu 11: Nghiệm tổng quát của phương trình vi phân $2x\\,dx + \\frac{\\cos y}{\\sin y}\\,dy = 0$ là:\nA. $x^2 + 1 + \\cot^2 y = C$\nB. $x^2 - \\ln|\\cos y| = C$\nC. $x^2 + \\ln|\\sin y| = C$\nD. $x^2 + \\frac{1}{\\cos^2 y} = C$\nĐáp án: C\nGiải thích: $\\int 2x\\,dx + \\int \\cot y\\,dy = x^2 + \\ln|\\sin y| = C$.\n\nCâu 12: Diện tích $S$ của mặt tròn xoay khi quay cung $y = \\cos x$ ($-\\frac{\\pi}{2} \\le x \\le 0$) quanh trục $Ox$ được tính là:\nA. $S = \\pi\\int_{-\\pi/2}^{0} \\cos x\\sqrt{1+\\sin^2 x}\\,dx$\nB. $S = \\pi\\int_{-\\pi/2}^{0} \\cos^2 x\\,dx$\nC. $S = 2\\pi\\int_{-\\pi/2}^{0} \\cos x\\sqrt{1+\\sin^2 x}\\,dx$\nD. $S = 2\\pi\\int_{0}^{\\pi/2} \\cos x\\,dx$\nĐáp án: C\nGiải thích: $S = 2\\pi\\int |y|\\sqrt{1+(y\')^2}\\,dx$; $y\' = -\\sin x$ và $\\cos x \\ge 0$ trên $\\left[-\\frac{\\pi}{2}, 0\\right]$.\n\nCâu 13: Theo tiêu chuẩn so sánh 2, tích phân $\\int_0^1 \\frac{(x-1)^2 + 3(1-x)}{\\sqrt[3]{(x+2)(1-x)}}\\,dx$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_0^1 \\frac{1-x}{\\sqrt[3]{x+2}}\\,dx$\nB. $\\int_0^1 \\frac{(x-1)^2}{\\sqrt[3]{1-x}}\\,dx$\nC. $\\int_0^1 \\frac{1-x}{\\sqrt[3]{1-x}}\\,dx$\nD. $\\int_0^1 \\frac{(x-1)^2}{\\sqrt[3]{x+2}}\\,dx$\nĐáp án: C\nGiải thích: Khi $x \\to 1^-$, tử $\\sim 3(1-x)$, mẫu $\\sim \\sqrt[3]{3}\\,(1-x)^{1/3}$ nên hàm $\\sim C\\cdot(1-x)^{2/3} = C\\cdot\\frac{1-x}{\\sqrt[3]{1-x}}$ (với $C$ là hằng số).\n\nCâu 14: Tích phân $I = \\int_1^{+\\infty} \\frac{dx}{x\\sqrt{\\ln x + 1}}$ bằng:\nA. $I = \\lim_{a \\to +\\infty} \\left(\\sqrt{\\ln a + 1} - 1\\right) = +\\infty$\nB. $I = \\lim_{a \\to +\\infty} 2\\left(\\sqrt{\\ln a + 1} - 1\\right) = +\\infty$\nC. $I = \\lim_{a \\to +\\infty} 2\\sqrt{\\ln a + 1} = +\\infty$\nD. $I = \\lim_{a \\to +\\infty} \\sqrt{\\ln a - 1} = +\\infty$\nĐáp án: B\nGiải thích: Đặt $u = \\ln x + 1$, $\\int \\frac{du}{\\sqrt{u}} = 2\\sqrt{u}$; từ 1 đến $a$ được $2\\left(\\sqrt{\\ln a + 1} - 1\\right) \\to +\\infty$.\n\nCâu 15: Tích phân $I = \\int_0^{\\pi/2} \\frac{\\cos x}{\\sin^2 x}\\,dx$ bằng:\nA. $I = \\lim_{a \\to 0^+} \\left[1 - \\frac{1}{\\sin^2 a}\\right] = +\\infty$\nB. $I = \\lim_{a \\to 0^+} \\left[-1 + \\frac{1}{\\cos a}\\right] = +\\infty$\nC. $I = \\lim_{a \\to 0^+} \\left[-1 + \\sin^2 a\\right] = -1$\nD. $I = \\lim_{a \\to 0^+} \\left[-1 + \\frac{1}{\\sin a}\\right] = +\\infty$\nĐáp án: D\nGiải thích: Nguyên hàm là $-\\frac{1}{\\sin x}$; $\\left[-\\frac{1}{\\sin x}\\right]_{a}^{\\pi/2} = -1 + \\frac{1}{\\sin a} \\to +\\infty$.\n\nCâu 16: Theo tiêu chuẩn so sánh 2, tích phân $\\int_3^{+\\infty} \\frac{x^4 + 3x^2}{\\sqrt{x(x-1)(x+2)}}\\,dx$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_3^{+\\infty} \\frac{x^4}{\\sqrt{x}}\\,dx$\nB. $\\int_3^{+\\infty} \\frac{x^4}{\\sqrt{x^3}}\\,dx$\nC. $\\int_3^{+\\infty} \\frac{3x^2}{\\sqrt{x}}\\,dx$\nD. $\\int_3^{+\\infty} \\frac{3x^2}{\\sqrt{x^3}}\\,dx$\nĐáp án: B\nGiải thích: Khi $x \\to \\infty$, hàm $\\sim \\frac{x^4}{x^{3/2}} = \\frac{x^4}{\\sqrt{x^3}}$.\n\nCâu 17: Thể tích của khối tròn xoay khi quay hình phẳng giới hạn bởi các đường $y = 4x - x^2$, $y = x$ quanh trục $Ox$ là:\nA. $\\frac{107\\pi}{5}$\nB. $\\frac{106\\pi}{5}$\nC. $\\frac{108\\pi}{5}$\nD. $\\frac{5\\pi}{6}$\nĐáp án: C\nGiải thích: Giao điểm $x = 0$ và $x = 3$; $V = \\pi\\int_0^3 \\left[(4x-x^2)^2 - x^2\\right]dx = \\pi\\int_0^3 (x^4 - 8x^3 + 15x^2)\\,dx = \\frac{108\\pi}{5}$.\n\nCâu 18: Nghiệm riêng của phương trình vi phân $y\' + \\frac{1}{x}y = x^2$ thỏa điều kiện đầu $y(1) = 1$ là:\nA. $y = x\\left(\\frac{1}{2} + \\frac{x^2}{2}\\right)$\nB. $y = x\\left(\\frac{3}{4} + \\frac{x^4}{4}\\right)$\nC. $y = \\frac{1}{x}\\left(\\frac{3}{4} + \\frac{x^4}{4}\\right)$\nD. $y = \\left(\\frac{3}{4} + \\frac{x^4}{4}\\right)\\ln x + 1$\nĐáp án: C\nGiải thích: Nhân tử tích phân $\\mu = x$; $(xy)\' = x^3$ nên $xy = \\frac{x^4}{4} + C$; $y(1) = 1$ cho $C = \\frac{3}{4}$.\n\nCâu 19: Tính diện tích miền phẳng giới hạn bởi 2 đường: $y = -x^2$, $y = 3x$.\nA. $\\frac{9}{2}$\nB. $\\frac{1}{2}$\nC. $\\frac{7}{2}$\nD. $\\frac{5}{2}$\nĐáp án: A\nGiải thích: Giao điểm $x = -3$ và $x = 0$; $S = \\int_{-3}^{0} (3x + x^2)\\,dx = \\frac{9}{2}$.\n\nCâu 20: Tích phân $I = \\int_1^2 \\frac{dx}{(x-1)^3}$ bằng:\nA. $I = \\lim_{a \\to 1^+} \\left[-2\\left(1-(a-1)^2\\right)\\right] = +\\infty$\nB. $I = \\lim_{a \\to 1^+} \\left[\\frac{1}{2}\\left(1-\\frac{1}{(a-1)^2}\\right)\\right] = -\\infty$\nC. $I = \\lim_{a \\to 1^+} \\left[2\\left(1-(a-1)^2\\right)\\right] = 2$\nD. $I = \\lim_{a \\to 1^+} \\left[-\\frac{1}{2}\\left(1-\\frac{1}{(a-1)^2}\\right)\\right] = +\\infty$\nĐáp án: D\nGiải thích: Nguyên hàm là $-\\frac{1}{2(x-1)^2}$; $\\left[-\\frac{1}{2(x-1)^2}\\right]_{a}^{2} = -\\frac{1}{2}\\left(1-\\frac{1}{(a-1)^2}\\right) \\to +\\infty$.').questions;
-  return [{id:'sample-kienthuc', name:'Kiến thức chung', questions:s1}, {id:'sample-tinhoc', name:'Tin học cơ bản', questions:s2}, {id:'tcc1-de256', name:'Toán cao cấp 1 – Đề 256', questions:s3}];
+  // Bản ảnh: 20 câu cắt từ ảnh chụp đề gốc, làm bài bằng nút A/B/C/D trên ảnh
+  const de256Key=[0,0,3,3,1,1,0,2,0,2,2,2,2,1,3,1,2,2,0,3];
+  const de256ShortExp=[
+  'sin(π/2+h) = cos h ≈ 1 − h²/2 + h⁴/24.',
+  'Số hạng trội nhất ln(1+x/3) ~ x/3.',
+  'f(1)=1, f′(1)=1/2, f′′(1)=−1/4.',
+  'f(x)=cot x, cot(π/4)=1.',
+  'sin²(x/2)~x²/4 và tan²x~x², tổng ~5x²/4.',
+  '(f⁻¹)′(x)=1/f′(y)=1/(15y⁴+2).',
+  'Đề in thiếu đáp án đúng; A là khi quên dấu trừ.',
+  'e^(3x)=1+3x+(3x)²/2!+(3x)³/3!.',
+  'f′(x)=y′/x′=1/(sin t·cos³t).',
+  'Nguyên hàm arctan x → π/2.',
+  '∫2x dx+∫cot y dy = x²+ln|sin y|.',
+  'S=2π∫|y|√(1+(y′)²)dx.',
+  'Tử ~3(1−x), mẫu ~∛3·(1−x)^(1/3).',
+  'Đặt u=ln x+1 được 2(√(ln a+1)−1)→+∞.',
+  'Nguyên hàm −1/sin x →+∞.',
+  'Hàm ~x⁴/x^(3/2).',
+  'Giao điểm 0 và 3, V=108π/5.',
+  '(xy)′=x³, y(1)=1 cho C=3/4.',
+  'Giao điểm −3 và 0, S=9/2.',
+  'Nguyên hàm −1/[2(x−1)²] →+∞.'];
+  let s4=de256Key.map((a,i)=>({q:'',options:['','','',''],answer:a,explanation:de256ShortExp[i],chapter:'',difficult:false,img:'images/de256/q'+String(i+1).padStart(2,'0')+'.jpg'}));
+  return [{id:'sample-kienthuc', name:'Kiến thức chung', questions:s1}, {id:'sample-tinhoc', name:'Tin học cơ bản', questions:s2}, {id:'tcc1-de256', name:'Toán cao cấp 1 – Đề 256', questions:s3}, {id:'tcc1-de256-photo', name:'Toán cao cấp 1 – Đề 256 (bản ảnh)', questions:s4}];
 }
-$('restoreBtn').addEventListener('click', ()=>{ subjects=sampleSubjects(); save(); renderSubjects(); $('importMsg').innerHTML='<div class="ok">Đã khôi phục 3 môn mẫu, bấm “Luyện đề nhanh” là làm được ngay.</div>'; });
+$('restoreBtn').addEventListener('click', ()=>{ subjects=sampleSubjects(); save(); renderSubjects(); $('importMsg').innerHTML='<div class="ok">Đã khôi phục 4 môn mẫu, bấm “Luyện đề nhanh” là làm được ngay.</div>'; });
 
 // Thêm môn Toán cao cấp 1 – Đề 256 cho dữ liệu đã lưu trước đó (không mất đề đã nhập, không mất lịch sử)
 function ensureDe256(){
@@ -636,11 +719,21 @@ function ensureDe256(){
   }catch(e){}
 }
 
+// Thêm môn bản ảnh cho dữ liệu đã lưu trước đó
+function ensureDe256Photo(){
+  try{
+    if(!subjects.some(s=>s.id==='tcc1-de256-photo')){
+      const s4=sampleSubjects().find(s=>s.id==='tcc1-de256-photo');
+      if(s4 && s4.questions.length===20){ subjects.push(s4); save(); }
+    }
+  }catch(e){}
+}
+
 // Init
 (function init(){
   try{
     const d=JSON.parse(localStorage.getItem(storeKey)||'{}');
-    if(d.subjects && d.subjects.length){ subjects=d.subjects; ensureDe256(); } else subjects=sampleSubjects();
+    if(d.subjects && d.subjects.length){ subjects=d.subjects; ensureDe256(); ensureDe256Photo(); } else subjects=sampleSubjects();
     if(d.history) history=d.history;
     if(typeof d.themeDark==='boolean') themeDark=d.themeDark;
     if(typeof d.fsLevel==='number') fsLevel=d.fsLevel;
