@@ -207,6 +207,23 @@ body.dark header.hero .badge{background:rgba(255,255,255,.12)!important;color:#e
 body.dark header.hero .chips span{background:rgba(255,255,255,.12)!important;color:#e2e8f0!important;border-color:rgba(255,255,255,.2)!important}
 body.dark header.hero button.secondary{color:#e2e8f0!important;background:rgba(255,255,255,.12)!important}
 body.dark .timer{background:#881337!important;color:#fecdd3!important}
+
+/* ===== Tối ưu mượt: chỉ animate transform và opacity, giảm repaint do blur ===== */
+html{scroll-behavior:smooth}
+.card,.opt,button,.orb,.topbar{transform:translateZ(0);backface-visibility:hidden}
+.progress>div{width:100%!important;transform-origin:left center;transform:scaleX(0);transition:transform .6s cubic-bezier(.34,1.3,.64,1)!important}
+.card:after{top:0!important;left:0!important;will-change:transform;animation:shineSmooth 10s ease infinite!important}
+@keyframes shineSmooth{0%{transform:translate3d(-160%,120%,0) rotate(50deg)}50%,100%{transform:translate3d(160%,-120%,0) rotate(50deg)}}
+.orb{will-change:transform}
+#quizBox,#quizNav{will-change:transform}
+.view-in,#quizBox.quiz-in{will-change:transform,opacity}
+@media (max-width:600px){
+.orbs{display:none}
+.card,.sub,.topbar{backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
+}
+@media (prefers-reduced-motion: reduce){
+.card:after{animation:none!important}
+}
 </style>
 </head>
 <body class="fs-1">
@@ -541,7 +558,7 @@ function renderQuiz(animate){
   if(!session.length) return;
   let q=session[currentIndex];
   $('quizProgressText').textContent='Câu '+(currentIndex+1)+' / '+session.length+' (Đã làm '+answers.filter(a=>a!==null).length+')';
-  $('progressBar').style.width=((currentIndex+1)/session.length*100)+'%';
+  $('progressBar').style.transform='scaleX('+((currentIndex+1)/session.length)+')';
   let html='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3 style="margin:0">Câu '+(currentIndex+1)+': '+esc(q.q)+'</h3><div style="display:flex;gap:8px"><button class="secondary small" id="flagBtn">'+(flagged[currentIndex]?'🚩 Đã đánh dấu':'🏳️ Đánh dấu')+'</button><button class="secondary small" id="starBtn">'+(q.difficult?'⭐ Câu khó':'☆ Câu khó')+'</button></div></div>';
   if(q.chapter) html+='<span class="badge">'+esc(q.chapter)+'</span>';
   q.options.forEach((opt,i)=>{ let cls='opt'; if(mode==='exam' && answers[currentIndex]===i) cls+=' selected'; if(mode==='review' && reviewLocked[currentIndex]){ if(i===q.answer) cls+=' correct'; else if(answers[currentIndex]===i) cls+=' wrong'; } html+='<button class="opt '+cls+'" data-opt="'+i+'"><span class="opt-letter">'+letters[i]+'</span><span>'+esc(opt)+'</span></button>'; });
