@@ -39,31 +39,26 @@ body.fs-0{--fs:15px} body.fs-1{--fs:16.5px} body.fs-2{--fs:18px}
 .logo svg{width:30px;height:30px;color:var(--red)}
 .logo small{display:block;font-size:12px;font-weight:600;color:var(--ink-soft)}
 .nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-button{position:relative;overflow:hidden;isolation:isolate;border:1px solid rgba(255,255,255,.45);border-radius:14px;
+button{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.45);border-radius:14px;
   padding:12px 20px;font-size:var(--fs);cursor:pointer;color:#fff;font-weight:700;font-family:inherit;
-  background:transparent;
-  box-shadow:0 10px 24px -10px rgba(29,36,64,.4);
-  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s,filter .18s}
-button::before{content:"";position:absolute;inset:0;border-radius:inherit;z-index:-1;pointer-events:none;
   background:linear-gradient(180deg,rgba(214,76,54,.8),rgba(156,42,28,.68));
-  backdrop-filter:blur(5px) saturate(170%);-webkit-backdrop-filter:blur(5px) saturate(170%);
-  filter:url(#lgDisp);
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 6px rgba(90,20,10,.2)}
-button::after{content:"";position:absolute;left:5%;right:5%;top:2px;height:44%;border-radius:999px;
+  backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 5px rgba(90,20,10,.18),0 10px 24px -10px rgba(29,36,64,.4);
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s,filter .18s}
+button::before{content:"";position:absolute;left:5%;right:5%;top:2px;height:44%;border-radius:999px;
   background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));pointer-events:none}
 button:hover{transform:translateY(-2px);filter:brightness(1.08);
-  box-shadow:0 14px 28px -10px rgba(29,36,64,.45)}
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -2px 5px rgba(90,20,10,.18),0 14px 28px -10px rgba(29,36,64,.45)}
 button:active{transform:translateY(0) scale(.97);filter:brightness(.96)}
-button.secondary::before{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.2));
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.7),inset 0 -2px 6px rgba(29,36,64,.1)}
-button.secondary{color:var(--ink);border:1px solid rgba(29,36,64,.3)}
-button.secondary:hover{color:var(--ink)}
-button.secondary:hover::before{background:linear-gradient(180deg,rgba(255,255,255,.68),rgba(255,255,255,.32))}
-button.green::before{background:linear-gradient(180deg,rgba(48,146,94,.8),rgba(21,103,57,.68));
-  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 6px rgba(10,60,35,.2)}
+button.secondary{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.2));
+  color:var(--ink);border:1px solid rgba(29,36,64,.3);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.7),inset 0 -2px 5px rgba(29,36,64,.08),0 10px 24px -10px rgba(29,36,64,.3)}
+button.secondary:hover{background:linear-gradient(180deg,rgba(255,255,255,.68),rgba(255,255,255,.32));color:var(--ink)}
+button.green{background:linear-gradient(180deg,rgba(48,146,94,.8),rgba(21,103,57,.68));
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 5px rgba(10,60,35,.2),0 10px 24px -10px rgba(29,36,64,.4)}
 button.green:hover{filter:brightness(1.08)}
-button.red::before{background:linear-gradient(180deg,rgba(214,76,54,.8),rgba(156,42,28,.68))}
-.opt::before,.opt::after,.navgrid button::before,.navgrid button::after{display:none}
+button.red{background:linear-gradient(180deg,rgba(214,76,54,.8),rgba(156,42,28,.68))}
+.opt::before,.navgrid button::before{display:none}
 button.small{padding:8px 14px;font-size:14px;border-radius:10px}
 header.hero{margin:26px auto 0;max-width:960px;background:var(--paper2);
   border:2px solid var(--ink);border-radius:20px;padding:34px 30px;position:relative;box-shadow:var(--shadow)}
@@ -207,10 +202,9 @@ body.dark ::-webkit-scrollbar-thumb{background:#3a4568;border-color:var(--paper)
 body.dark .topbar{background:#141b32;border-color:#f2ecdc}
 body.dark button.secondary{color:var(--ink);border-color:var(--ink)}
 body.dark button.secondary:hover{background:var(--ink);color:#11162a}
-body.dark button{box-shadow:0 10px 22px -10px rgba(0,0,0,.65)}
-body.dark button::before{box-shadow:inset 0 1px 1px rgba(255,255,255,.35),inset 0 -2px 6px rgba(0,0,0,.3)}
-body.dark button.secondary::before{background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.07))}
-body.dark button.secondary{color:var(--ink);border:1px solid rgba(255,255,255,.28)}
+body.dark button{box-shadow:inset 0 1px 1px rgba(255,255,255,.35),inset 0 -2px 5px rgba(0,0,0,.28),0 10px 22px -10px rgba(0,0,0,.65)}
+body.dark button.secondary{background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.07));
+  color:var(--ink);border:1px solid rgba(255,255,255,.28)}
 body.dark input,body.dark select,body.dark textarea{background:#10162b;border-color:var(--line);color:var(--ink)}
 body.dark input::placeholder,body.dark textarea::placeholder{color:#6b7594}
 body.dark input[type="file"]{background:#141b32;color:var(--ink-soft)}
@@ -246,13 +240,6 @@ body.dark ::selection{background:#5c231b;color:#ffd9d2}
 </head>
 
 <body class="fs-1">
-<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
-<filter id="lgDisp" x="-30%" y="-30%" width="160%" height="160%">
-<feTurbulence type="fractalNoise" baseFrequency="0.012 0.012" numOctaves="2" seed="7" result="n"/>
-<feGaussianBlur in="n" stdDeviation="3" result="b"/>
-<feDisplacementMap in="SourceGraphic" in2="b" scale="42" xChannelSelector="R" yChannelSelector="G"/>
-</filter>
-</defs></svg>
 <div class="orbs" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i></div>
 <div class="topbar">
 <div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 9L12 4 2 9l10 5 10-5z"/><path d="M6 11.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5"/><path d="M22 9v5"/></svg><span>Luyện Thi Pro<small>Ôn tập và thi thử, không cần đăng nhập</small></span></div>
