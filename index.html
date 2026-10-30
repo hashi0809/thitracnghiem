@@ -5,244 +5,203 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Luyện Thi Pro - Ôn tập và Thi thử</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
 <style>
-:root{--indigo:#4f46e5;--violet:#8b5cf6;--pink:#ec4899;--green:#10b981;--red:#f43f5e;--amber:#f59e0b;--line:#e0e7ff}
+:root{
+  --paper:#f5f0e4; --paper2:#fffdf7; --ink:#1d2440; --ink-soft:#55607e;
+  --red:#bf3524; --red-deep:#9c2a1c; --green:#1c7a4b; --amber:#a86a12;
+  --line:#ddd3ba; --line-soft:#e9e2cd;
+  --shadow:0 18px 40px -18px rgba(29,36,64,.28);
+  --r:14px;
+}
 *{box-sizing:border-box}
-body{--fs:16px;margin:0;font-family:"Be Vietnam Pro",system-ui,Arial,sans-serif;font-size:var(--fs);background:linear-gradient(180deg,#eef2ff,#fdf4ff 45%,#fff7ed);background-attachment:fixed;color:#1e1b4b;line-height:1.6}
-body.fs-0{--fs:15px} body.fs-1{--fs:16.5px} body.fs-2{--fs:18px}
-body.dark{background:linear-gradient(180deg,#0f172a,#1e1b4b);color:#e2e8f0}
-.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 18px;background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-body.dark .topbar{background:rgba(15,23,42,.95);border-color:#334155}
-.logo{font-weight:900;font-size:20px} .logo small{display:block;font-size:12px;font-weight:600;color:#64748b}
-body.dark .logo small{color:#94a3b8}
-.nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-button{border:0;border-radius:12px;padding:11px 18px;font-size:var(--fs);cursor:pointer;background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff;font-weight:700;box-shadow:0 6px 16px rgba(99,102,241,.25);transition:transform .15s}
-button:hover{transform:translateY(-1px)} button.secondary{background:#eef2ff;color:#3730a3;box-shadow:none} button.green{background:linear-gradient(135deg,#059669,#10b981)} button.red{background:linear-gradient(135deg,#e11d48,#f43f5e)} button.small{padding:8px 12px;font-size:14px}
-body.dark button.secondary{background:#1e293b;color:#c7d2fe}
-header.hero{margin:18px auto 0;max-width:940px;background:linear-gradient(135deg,#312e81,#6d28d9 55%,#db2777);color:#fff;border-radius:24px;padding:30px 24px;position:relative;overflow:hidden}
-header.hero:before{content:"∑ π √ ∞ ✦ ?";position:absolute;right:18px;top:8px;font-size:56px;color:rgba(255,255,255,.12);letter-spacing:10px}
-header.hero h1{margin:4px 0 8px;font-size:clamp(26px,5vw,38px);font-weight:900}
-header.hero p{margin:0;opacity:.92;max-width:620px}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px} .chips span{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:5px 12px;border-radius:999px;font-size:13px;font-weight:700}
-main{max-width:940px;margin:0 auto;padding:18px 16px 40px}
-.card{background:rgba(255,255,255,.94);border:1px solid var(--line);border-radius:22px;padding:20px;margin-bottom:18px;box-shadow:0 12px 30px rgba(79,70,229,.10);animation:fadeUp .3s ease}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-body.dark .card{background:#1e293b;border-color:#334155;box-shadow:none}
-h2{margin:0 0 8px;font-size:21px;font-weight:800} h3{margin:16px 0 8px}
-input,select,textarea{width:100%;padding:11px 13px;border:1.5px solid #ddd6fe;border-radius:12px;font-size:var(--fs);font-family:inherit;background:#fff}
-body.dark input,body.dark select,body.dark textarea{background:#0f172a;color:#e2e8f0;border-color:#334155}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 4px rgba(139,92,246,.15)}
-input[type="file"]{padding:20px;border:2px dashed #a5b4fc;background:#f5f3ff;text-align:center;cursor:pointer;font-weight:600;color:#4338ca}
-body.dark input[type="file"]{background:#0f172a;color:#c7d2fe}
-label{font-weight:700;display:block;margin:12px 0 5px}
-.grid-sub{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:14px}
-.sub{border:1px solid var(--line);border-radius:18px;padding:16px;background:#fff}
-body.dark .sub{background:#0f172a;border-color:#334155}
-.sub h3{margin:0 0 6px} .muted{color:#64748b;font-size:14px} body.dark .muted{color:#94a3b8}
-.badge{display:inline-block;background:linear-gradient(135deg,#e0e7ff,#fae8ff);color:#5b21b6;padding:4px 12px;border-radius:20px;font-size:13px;font-weight:800}
-body.dark .badge{background:#312e81;color:#ddd6fe}
-.opt{display:flex;align-items:center;gap:13px;width:100%;text-align:left;background:#fff;color:inherit;border:2px solid #e0e7ff;margin:10px 0;padding:14px 16px;box-shadow:none;font-weight:500}
-body.dark .opt{background:#0f172a;border-color:#334155}
-.opt:hover{border-color:#a5b4fc;background:#f5f3ff} body.dark .opt:hover{background:#1e293b}
-.opt-letter{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:50%;background:#eef2ff;color:#4338ca;font-weight:900}
-body.dark .opt-letter{background:#312e81;color:#ddd6fe}
-.opt.selected{border-color:var(--indigo);background:#eef2ff} body.dark .opt.selected{background:#312e81} .opt.selected .opt-letter{background:var(--indigo);color:#fff}
-.opt.correct{border-color:#10b981;background:#ecfdf5} .opt.correct .opt-letter{background:#10b981;color:#fff}
-.opt.wrong{border-color:#f43f5e;background:#fff1f2} .opt.wrong .opt-letter{background:#f43f5e;color:#fff}
-.progress{height:12px;background:#e0e7ff;border-radius:20px;overflow:hidden} .progress>div{height:100%;background:linear-gradient(90deg,var(--indigo),var(--pink));transition:width .3s}
-.navgrid{display:flex;flex-wrap:wrap;gap:8px} .navgrid button{width:46px;height:46px;padding:0;border-radius:13px}
-.navgrid button.done{background:linear-gradient(135deg,#059669,#10b981)} .navgrid button.current{outline:3px solid var(--amber);outline-offset:2px} .navgrid button.flagged{box-shadow:inset 0 0 0 3px var(--amber)}
-.qcard{border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px;background:#fff}
-body.dark .qcard{background:#0f172a;border-color:#334155}
-.qcard input,.qcard textarea{margin-bottom:8px}
-.score{font-size:54px;font-weight:900;text-align:center;background:linear-gradient(135deg,var(--indigo),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent}
-.score-wrap{text-align:center;background:linear-gradient(135deg,#eef2ff,#fdf2f8);border-radius:18px;padding:16px}
-body.dark .score-wrap{background:#0f172a}
-.timer{font-size:20px;font-weight:900;color:#e11d48;background:#fff1f2;padding:6px 14px;border-radius:999px}
-body.dark .timer{background:#881337;color:#fecdd3}
-.error{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239;padding:13px;border-radius:14px;white-space:pre-line}
-.ok{background:#ecfdf5;border:1px solid #a7f3d0;color:#065f46;padding:13px;border-radius:14px}
-body.dark .ok{background:#052e16;color:#a7f3d0}
-.hidden{display:none!important}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0} @media(max-width:600px){.stats{grid-template-columns:1fr}}
-.stat{border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center;background:#fff} body.dark .stat{background:#0f172a;border-color:#334155}
-.stat b{font-size:28px;display:block}
-.chart{display:flex;align-items:flex-end;gap:10px;height:150px;padding:14px;border:1px solid var(--line);border-radius:16px;background:#fff}
-body.dark .chart{background:#0f172a;border-color:#334155}
-.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px} .bar i{display:block;width:100%;max-width:44px;border-radius:8px 8px 0 0;background:linear-gradient(180deg,var(--violet),var(--indigo))}
-table{width:100%;border-collapse:collapse;font-size:14px} th,td{padding:9px 8px;border-bottom:1px solid var(--line);text-align:left}
-.checkline{display:flex;align-items:center;gap:10px;background:#f5f3ff;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:10px}
-body.dark .checkline{background:#0f172a;border-color:#334155}
-.checkline label{margin:0} .checkline input{width:18px;height:18px;accent-color:#7c3aed}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:14px} @media(max-width:600px){.row{grid-template-columns:1fr}}
-
-/* ===== Liquid Glass + iOS-style motion (lớp phủ, không đổi logic) ===== */
-.orbs{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
-.orb{position:absolute;width:440px;height:440px;border-radius:50%;filter:blur(75px);opacity:.55;will-change:transform;animation:orbFloat 18s ease-in-out infinite alternate}
-.o1{background:#a5b4fc;top:-90px;left:-70px}
-.o2{background:#f0abfc;top:22%;right:-110px;animation-delay:-6s}
-.o3{background:#fcd34d;bottom:-130px;left:32%;opacity:.38;animation-delay:-12s}
-@keyframes orbFloat{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(46px,32px,0) scale(1.12)}}
-.topbar,main,header.hero{position:relative;z-index:1}
-.topbar{top:12px;max-width:940px;margin:12px auto;border-radius:20px;background:rgba(255,255,255,.62)!important;border:1px solid rgba(255,255,255,.75)!important;box-shadow:0 12px 32px rgba(79,70,229,.14),inset 0 1px 0 rgba(255,255,255,.9);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%)}
-body.dark .topbar{background:rgba(30,41,59,.58)!important;border-color:rgba(255,255,255,.14)!important;box-shadow:0 12px 32px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)}
-.card{background:rgba(255,255,255,.58)!important;border:1px solid rgba(255,255,255,.75)!important;box-shadow:0 20px 44px rgba(79,70,229,.12),inset 0 1px 0 rgba(255,255,255,.9)!important;backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%)}
-body.dark .card{background:rgba(30,41,59,.55)!important;border-color:rgba(255,255,255,.14)!important;box-shadow:0 20px 44px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12)!important}
-.sub,.stat,.chart,.qcard{background:rgba(255,255,255,.6)!important;border:1px solid rgba(255,255,255,.75)!important;backdrop-filter:blur(18px) saturate(170%);-webkit-backdrop-filter:blur(18px) saturate(170%);box-shadow:inset 0 1px 0 rgba(255,255,255,.85)}
-body.dark .sub,body.dark .stat,body.dark .chart,body.dark .qcard{background:rgba(15,23,42,.55)!important;border-color:rgba(255,255,255,.13)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.1)}
-header.hero{box-shadow:0 24px 50px rgba(109,40,217,.28),inset 0 1px 0 rgba(255,255,255,.35)}
-header.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.28) 0%,rgba(255,255,255,0) 32%);pointer-events:none}
-button{transition:transform .38s cubic-bezier(.34,1.56,.64,1),box-shadow .38s cubic-bezier(.22,1,.36,1),background .3s,filter .3s;will-change:transform}
-button:hover{transform:translateY(-2px) scale(1.02)}
-button:active{transform:scale(.96)}
-button.secondary{background:rgba(255,255,255,.65)!important;backdrop-filter:blur(14px) saturate(170%);-webkit-backdrop-filter:blur(14px) saturate(170%);border:1px solid rgba(255,255,255,.8)}
-body.dark button.secondary{background:rgba(51,65,85,.55)!important;border-color:rgba(255,255,255,.14)}
-.opt{background:rgba(255,255,255,.65)!important;backdrop-filter:blur(14px) saturate(170%);-webkit-backdrop-filter:blur(14px) saturate(170%);transition:transform .38s cubic-bezier(.34,1.56,.64,1),border-color .3s,background .3s,box-shadow .3s}
-body.dark .opt{background:rgba(15,23,42,.55)!important}
-.opt:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 10px 24px rgba(79,70,229,.14)}
-.opt.selected{box-shadow:0 10px 24px rgba(79,70,229,.18)}
-.progress>div{transition:width .65s cubic-bezier(.34,1.3,.64,1)}
-.card{animation:fadeUp .55s cubic-bezier(.22,1,.36,1) both}
-.view-in{animation:viewIn .55s cubic-bezier(.22,1,.36,1) both}
-@keyframes viewIn{from{opacity:0;transform:translateY(16px) scale(.99)}to{opacity:1;transform:none}}
-#quizBox.quiz-in{animation:quizIn .45s cubic-bezier(.34,1.4,.64,1) both}
-@keyframes quizIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:none}}
-.navgrid button{transition:transform .35s cubic-bezier(.34,1.56,.64,1),background .3s,box-shadow .3s}
-.navgrid button:hover{transform:scale(1.08)}
-.bar i{transition:height .7s cubic-bezier(.22,1,.36,1)}
-@media (prefers-reduced-motion: reduce){
-*,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-.orbs{display:none}
-}
-
-/* ===== Uiverse: card solid-metal + button breezy-zebra (lớp phủ cuối, không đổi logic) ===== */
-@property --liq{syntax:"<angle>";initial-value:0deg;inherits:false}
-@keyframes liqSpin{to{--liq:360deg}}
-@keyframes solidAni{0%{transform:translateX(0) scale(1)}50%{transform:translateX(-100%) scale(.8)}100%{transform:translateX(0) scale(1)}}
-@keyframes solidShine{0%{top:100%;left:-100%}50%,100%{top:0%;left:70%}}
-@keyframes liqPulse{0%,100%{opacity:1}50%{opacity:.1}}
-body{background:#dfdfdf!important;background-image:none!important}
-body.dark{background:#171717!important}
-.orb{filter:blur(10px)!important;opacity:1!important;border:2px solid #ffffffa6;box-shadow:inset 10px 0 20px #fff;animation:solidAni 28s ease-in-out infinite!important}
-.o1{width:180px;height:180px;background:linear-gradient(orange,magenta)!important}
-.o2{width:100px;height:100px;background:linear-gradient(90deg,orange,magenta)!important;animation:orbFloat 18s ease-in-out infinite alternate!important}
-.o3{width:140px;height:140px;background:linear-gradient(orange,magenta)!important;opacity:.8!important}
-.topbar{border-radius:10px!important;background:rgba(255,255,255,.35)!important;border:1px solid #ffffff56!important;backdrop-filter:blur(10.5px)!important;-webkit-backdrop-filter:blur(10.5px)!important;box-shadow:inset 2px 1px 6px #ffffff45!important}
-body.dark .topbar{background:rgba(0,0,0,.35)!important;border-color:#ffffff33!important}
-.card{border-radius:10px!important;background:transparent!important;background-color:rgba(255,255,255,.28)!important;border:1px solid #ffffff56!important;backdrop-filter:blur(10.5px)!important;-webkit-backdrop-filter:blur(10.5px)!important;box-shadow:inset 2px 1px 6px #ffffff45!important;overflow:hidden}
-body.dark .card{background-color:rgba(255,255,255,.08)!important;border-color:#ffffff33!important}
-.card>*{position:relative;z-index:1}
-.card:after{content:"";position:absolute;z-index:0;width:150%;height:10px;top:100%;left:-100%;background:#fff;transform:rotateZ(50deg);filter:blur(30px);animation:solidShine 10s ease infinite;pointer-events:none}
-.sub,.stat,.chart,.qcard{border-radius:10px!important;background:rgba(255,255,255,.35)!important;border:1px solid #ffffff56!important;backdrop-filter:blur(10.5px)!important;-webkit-backdrop-filter:blur(10.5px)!important;box-shadow:inset 2px 1px 6px #ffffff45!important}
-body.dark .sub,body.dark .stat,body.dark .chart,body.dark .qcard{background:rgba(255,255,255,.07)!important;border-color:#ffffff33!important}
-header.hero{background:rgba(255,255,255,.28)!important;border:1px solid #ffffff56!important;backdrop-filter:blur(10.5px)!important;-webkit-backdrop-filter:blur(10.5px)!important;box-shadow:inset 2px 1px 6px #ffffff45!important;color:#1e1b4b!important}
-header.hero h1{color:transparent!important;background-image:linear-gradient(90deg,rgb(0,0,0),rgb(116,111,111))!important;-webkit-background-clip:text!important;background-clip:text!important}
-header.hero p{color:#3a3939!important;opacity:1!important}
-header.hero .badge{background:rgba(255,255,255,.6)!important;color:#3a3939!important}
-header.hero .chips span{background:rgba(255,255,255,.55)!important;color:#3a3939!important;border-color:#ffffffa6!important}
-header.hero button.secondary{color:#3a3939!important;background:rgba(255,255,255,.6)!important}
-/* Nút chính kiểu Neon Liquid Button: viên thuốc, viền trắng, gradient lỏng xoay, vệt sáng trên */
-#quickBtn,#startReviewBtn,#startExamBtn,#confirmBtn,#finishBtn,#redoAllBtn,#redoWrongBtn{
-border-radius:32px!important;border:2px solid #fff!important;overflow:hidden;position:relative;
-color:#000!important;font-weight:700;letter-spacing:.08rem;text-shadow:0 1px 3px #fff;
-background:conic-gradient(from var(--liq),#fff,#00f,#0ff,#7c3aed,#ff8a00,#fff)!important;
-background-size:100% 100%!important;filter:saturate(.9) brightness(1.15);
-animation:liqSpin 16s linear infinite;box-shadow:inset 0 0 10px 9px #558,0 8px 24px rgba(0,0,255,.18)!important}
-#quickBtn:after,#startReviewBtn:after,#startExamBtn:after,#confirmBtn:after,#finishBtn:after,#redoAllBtn:after,#redoWrongBtn:after{
-content:"";position:absolute;left:10%;top:6px;width:80%;height:10px;border-radius:50px;background:#fff5;filter:blur(5px);pointer-events:none;animation:liqPulse 3s ease-in-out infinite}
-#quickBtn:hover,#startReviewBtn:hover,#startExamBtn:hover,#confirmBtn:hover,#finishBtn:hover,#redoAllBtn:hover,#redoWrongBtn:hover{transform:scale(1.08)!important}
-#quickBtn:active,#startReviewBtn:active,#startExamBtn:active,#confirmBtn:active,#finishBtn:active,#redoAllBtn:active,#redoWrongBtn:active{transform:scale(.95)!important}
-.progress>div{background:linear-gradient(90deg,orange,magenta)!important}
-.score{background-image:linear-gradient(90deg,rgb(0,0,0),rgb(116,111,111))!important}
-@media (prefers-reduced-motion: reduce){
-.orbs{display:block!important}
-.orb,.card:after,#quickBtn,#startReviewBtn,#startExamBtn,#confirmBtn,#finishBtn,#redoAllBtn,#redoWrongBtn{animation:none!important}
-}
-
-/* Xóa màu nút theo yêu cầu: nút chính về kính trắng trơn, không gradient lỏng */
-#quickBtn,#startReviewBtn,#startExamBtn,#confirmBtn,#finishBtn,#redoAllBtn,#redoWrongBtn{
-background:rgba(255,255,255,.75)!important;background-image:none!important;filter:none!important;animation:none!important;
-color:#1e1b4b!important;text-shadow:none!important;letter-spacing:0!important;
-border:1px solid #ffffff!important;box-shadow:inset 2px 1px 6px #ffffff45,0 4px 14px rgba(0,0,0,.08)!important}
-#quickBtn:after,#startReviewBtn:after,#startExamBtn:after,#confirmBtn:after,#finishBtn:after,#redoAllBtn:after,#redoWrongBtn:after{display:none!important}
-#quickBtn:hover,#startReviewBtn:hover,#startExamBtn:hover,#confirmBtn:hover,#finishBtn:hover,#redoAllBtn:hover,#redoWrongBtn:hover{transform:scale(1.02)!important}
-#quickBtn:active,#startReviewBtn:active,#startExamBtn:active,#confirmBtn:active,#finishBtn:active,#redoAllBtn:active,#redoWrongBtn:active{transform:scale(.98)!important}
-body.dark #quickBtn,body.dark #startReviewBtn,body.dark #startExamBtn,body.dark #confirmBtn,body.dark #finishBtn,body.dark #redoAllBtn,body.dark #redoWrongBtn{background:rgba(255,255,255,.12)!important;color:#fff!important;border-color:#ffffff33!important}
-
-/* ===== Sửa triệt để chế độ tối: mọi chữ và nền phải đọc được trên nền tối ===== */
-body.dark{background:#0f172a!important;color:#e2e8f0!important}
-body.dark .orbs{opacity:.45}
-body.dark .topbar{background:rgba(15,23,42,.78)!important;border-color:rgba(255,255,255,.16)!important;color:#e2e8f0!important}
-body.dark .logo small{color:#94a3b8!important}
-body.dark .card{background-color:rgba(30,41,59,.82)!important;border-color:rgba(255,255,255,.16)!important;color:#e2e8f0!important;box-shadow:0 20px 44px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.12)!important}
-body.dark .sub,body.dark .stat,body.dark .chart,body.dark .qcard{background-color:rgba(15,23,42,.72)!important;border-color:rgba(255,255,255,.16)!important;color:#e2e8f0!important}
-body.dark h2,body.dark h3,body.dark label{color:#f1f5f9!important}
-body.dark .muted{color:#94a3b8!important}
-body.dark input,body.dark select,body.dark textarea{background:#0f172a!important;color:#f1f5f9!important;border-color:#334155!important}
-body.dark input::placeholder,body.dark textarea::placeholder{color:#94a3b8!important}
-body.dark input[type="file"]{background:#0f172a!important;color:#e2e8f0!important}
-body.dark .checkline{background:#0f172a!important;border-color:#334155!important}
-body.dark .badge{background:#312e81!important;color:#ddd6fe!important}
-body.dark .opt{background:rgba(15,23,42,.72)!important;color:#e2e8f0!important;border-color:#334155!important}
-body.dark .opt:hover{background:#1e293b!important}
-body.dark .opt-letter{background:#312e81!important;color:#ddd6fe!important}
-body.dark .opt.selected{background:#312e81!important}
-body.dark .opt.correct{background:#052e16!important;border-color:#10b981!important;color:#d1fae5!important}
-body.dark .opt.wrong{background:#3f0d1d!important;border-color:#f43f5e!important;color:#ffe4e6!important}
-body.dark .progress{background:#334155!important}
-body.dark .score{background-image:linear-gradient(90deg,#ffffff,#fbbf24)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
-body.dark .score-wrap{background:#1e293b!important}
-body.dark .ok{background:#052e16!important;color:#a7f3d0!important;border-color:#166534!important}
-body.dark .error{background:#3f0d1d!important;color:#fecdd3!important;border-color:#881337!important}
-body.dark table th,body.dark table td{border-color:#334155!important;color:#e2e8f0!important}
-body.dark button.secondary{background:rgba(51,65,85,.75)!important;color:#e2e8f0!important;border-color:rgba(255,255,255,.16)!important}
-body.dark .navgrid button.secondary{background:rgba(51,65,85,.75)!important;color:#e2e8f0!important}
-body.dark header.hero{background-color:rgba(30,41,59,.82)!important;border-color:rgba(255,255,255,.16)!important;color:#e2e8f0!important}
-body.dark header.hero h1{background-image:linear-gradient(90deg,#ffffff,#fbbf24)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
-body.dark header.hero p{color:#cbd5e1!important}
-body.dark header.hero .badge{background:rgba(255,255,255,.12)!important;color:#e2e8f0!important}
-body.dark header.hero .chips span{background:rgba(255,255,255,.12)!important;color:#e2e8f0!important;border-color:rgba(255,255,255,.2)!important}
-body.dark header.hero button.secondary{color:#e2e8f0!important;background:rgba(255,255,255,.12)!important}
-body.dark .timer{background:#881337!important;color:#fecdd3!important}
-
-/* ===== Tối ưu mượt: chỉ animate transform và opacity, giảm repaint do blur ===== */
 html{scroll-behavior:smooth}
-.card,.opt,button,.orb,.topbar{transform:translateZ(0);backface-visibility:hidden}
-.progress>div{width:100%!important;transform-origin:left center;transform:scaleX(0);transition:transform .6s cubic-bezier(.34,1.3,.64,1)!important}
-.card:after{top:0!important;left:0!important;will-change:transform;animation:shineSmooth 10s ease infinite!important}
-@keyframes shineSmooth{0%{transform:translate3d(-160%,120%,0) rotate(50deg)}50%,100%{transform:translate3d(160%,-120%,0) rotate(50deg)}}
-.orb{will-change:transform}
-#quizBox,#quizNav{will-change:transform}
-.view-in,#quizBox.quiz-in{will-change:transform,opacity}
-@media (max-width:600px){
-.orbs{display:none}
-.card,.sub,.topbar{backdrop-filter:blur(8px)!important;-webkit-backdrop-filter:blur(8px)!important}
-}
-@media (prefers-reduced-motion: reduce){
-.card:after{animation:none!important}
-}
-
-/* KaTeX: công thức toán hiển thị đẹp như đề in */
+body{--fs:16px;margin:0;font-family:"Be Vietnam Pro",system-ui,Arial,sans-serif;font-size:var(--fs);
+  color:var(--ink);line-height:1.6;
+  background:var(--paper);
+  background-image:radial-gradient(1200px 600px at 50% -10%,#fffdf4 0%,var(--paper) 60%);}
+body.fs-0{--fs:15px} body.fs-1{--fs:16.5px} body.fs-2{--fs:18px}
+::selection{background:#f3c1b8;color:#7c1f14}
+:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:6px}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:var(--paper)}
+::-webkit-scrollbar-thumb{background:#c9bfa4;border-radius:8px;border:3px solid var(--paper)}
+::-webkit-scrollbar-thumb:hover{background:#a89a76}
+.topbar{position:sticky;top:0;z-index:20;display:flex;align-items:center;justify-content:space-between;
+  gap:10px;flex-wrap:wrap;padding:12px 20px;background:var(--paper2);border-bottom:2px solid var(--ink)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:19px;letter-spacing:-.01em}
+.logo svg{width:30px;height:30px;color:var(--red)}
+.logo small{display:block;font-size:12px;font-weight:600;color:var(--ink-soft)}
+.nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+button{border:0;border-radius:12px;padding:12px 20px;font-size:var(--fs);cursor:pointer;
+  background:var(--red);color:#fff;font-weight:700;font-family:inherit;
+  box-shadow:0 10px 22px -10px rgba(29,36,64,.35);
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s,background .18s}
+button:hover{transform:translateY(-2px);background:var(--red-deep);box-shadow:0 14px 26px -10px rgba(29,36,64,.4)}
+button:active{transform:translateY(0) scale(.98)}
+button.secondary{background:transparent;color:var(--ink);border:1.5px solid var(--ink);box-shadow:none}
+button.secondary:hover{background:var(--ink);color:var(--paper2)}
+button.green{background:var(--green);box-shadow:0 10px 22px -10px rgba(29,36,64,.35)}
+button.green:hover{background:#156739}
+button.red{background:var(--red)}
+button.small{padding:8px 14px;font-size:14px;border-radius:10px}
+header.hero{margin:26px auto 0;max-width:960px;background:var(--paper2);
+  border:2px solid var(--ink);border-radius:20px;padding:34px 30px;position:relative;box-shadow:var(--shadow)}
+.stamp{display:inline-block;border:2px solid var(--red);color:var(--red);font-weight:800;font-size:12.5px;
+  letter-spacing:.14em;padding:6px 14px;border-radius:6px;transform:rotate(-2deg);text-transform:uppercase}
+header.hero h1{font-family:"Playfair Display",serif;font-weight:900;letter-spacing:-.02em;
+  font-size:clamp(30px,5.4vw,46px);line-height:1.15;margin:16px 0 10px;max-width:16ch}
+header.hero h1 em{font-style:normal;color:var(--red)}
+header.hero p{margin:0;color:var(--ink-soft);max-width:60ch;font-size:1.02em}
+.hero-actions{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
+.chips span{border:1.5px solid var(--line);background:var(--paper);padding:5px 13px;border-radius:999px;
+  font-size:13px;font-weight:700;color:var(--ink-soft)}
+main{max-width:960px;margin:0 auto;padding:22px 16px 48px}
+.card{background:var(--paper2);border:1.5px solid var(--line);border-radius:var(--r);
+  padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
+h2{font-family:"Playfair Display",serif;font-size:24px;font-weight:800;letter-spacing:-.01em;
+  margin:0 0 4px;display:flex;align-items:center;gap:10px}
+h2 svg{width:24px;height:24px;color:var(--red);flex:0 0 24px}
+h3{margin:20px 0 8px;font-size:17px}
+.muted{color:var(--ink-soft);font-size:14px}
+p.muted{margin:4px 0 12px}
+label{font-weight:700;display:block;margin:14px 0 6px;font-size:14.5px}
+input,select,textarea{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:10px;
+  font-size:var(--fs);font-family:inherit;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(191,53,36,.14)}
+input[type="file"]{padding:22px;border:2px dashed var(--line);background:var(--paper);text-align:center;
+  cursor:pointer;font-weight:600;color:var(--ink-soft)}
+.checkline{display:flex;align-items:center;gap:10px;background:var(--paper);border:1.5px solid var(--line);
+  border-radius:10px;padding:10px 14px;margin-top:10px}
+.checkline label{margin:0;font-weight:600}
+.checkline input{width:18px;height:18px;accent-color:var(--red)}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.row{grid-template-columns:1fr}}
+.grid-sub{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px;margin-top:14px}
+.sub{border:1.5px solid var(--line);border-radius:var(--r);padding:18px;background:var(--paper);
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s}
+.sub:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.sub h3{margin:0 0 6px;font-size:16.5px}
+.badge{display:inline-block;background:var(--ink);color:var(--paper2);padding:4px 13px;border-radius:999px;
+  font-size:12.5px;font-weight:700;letter-spacing:.02em}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#fff;color:var(--ink);
+  border:1.5px solid var(--line);margin:10px 0;padding:13px 16px;box-shadow:none;font-weight:500;border-radius:var(--r)}
+.opt:hover{border-color:var(--ink);background:#fff;transform:none;box-shadow:none}
+.opt-letter{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;border-radius:50%;
+  border:2px solid var(--ink-soft);color:var(--ink-soft);font-weight:800;background:transparent}
+.opt.selected{border-color:var(--ink);border-width:2px;background:#fff}
+.opt.selected .opt-letter{background:var(--ink);border-color:var(--ink);color:var(--paper2)}
+.opt.correct{border-color:var(--green);border-width:2px;background:#eaf7f0}
+.opt.correct .opt-letter{background:var(--green);border-color:var(--green);color:#fff}
+.opt.wrong{border-color:var(--red);border-width:2px;background:#fdeeea}
+.opt.wrong .opt-letter{background:var(--red);border-color:var(--red);color:#fff}
+.progress{height:10px;background:var(--line-soft);border-radius:20px;overflow:hidden}
+.progress>div{height:100%;width:100%;background:var(--red);transform-origin:left center;transform:scaleX(0);
+  transition:transform .5s cubic-bezier(.22,1,.36,1);border-radius:20px}
+.navgrid{display:flex;flex-wrap:wrap;gap:8px}
+.navgrid button{width:46px;height:46px;padding:0;border-radius:12px;background:var(--paper);
+  border:1.5px solid var(--line);color:var(--ink);box-shadow:none;font-weight:700}
+.navgrid button:hover{background:var(--line-soft);transform:none}
+.navgrid button.done{background:var(--ink);border-color:var(--ink);color:var(--paper2)}
+.navgrid button.current{outline:2.5px solid var(--red);outline-offset:2px}
+.navgrid button.flagged{position:relative}
+.navgrid button.flagged::after{content:"";position:absolute;top:6px;right:6px;width:9px;height:9px;
+  border-radius:50%;background:var(--red)}
+.score-wrap{text-align:center;border:2px dashed var(--line);border-radius:18px;padding:26px 16px;background:var(--paper)}
+.score{font-family:"Playfair Display",serif;font-size:64px;font-weight:900;color:var(--red);
+  letter-spacing:-.02em;line-height:1}
+.score-stamp{display:inline-block;border:3px solid var(--red);border-radius:50%;padding:26px 30px;transform:rotate(-4deg)}
+.timer{font-size:17px;font-weight:800;color:#fff;background:var(--red);padding:7px 16px;border-radius:999px;
+  letter-spacing:.03em}
+.error{background:#fdeeea;border:1.5px solid #f2b8a6;color:#8c2415;padding:13px 15px;border-radius:12px;white-space:pre-line}
+.ok{background:#eaf7f0;border:1.5px solid #a9dcc0;color:#14532d;padding:13px 15px;border-radius:12px}
+.qcard{border:1.5px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px;background:#fff}
+.qcard input,.qcard textarea{margin-bottom:8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}
+@media(max-width:600px){.stats{grid-template-columns:1fr}}
+.stat{border:1.5px solid var(--line);border-radius:12px;padding:16px 14px;text-align:center;background:var(--paper)}
+.stat b{font-family:"Playfair Display",serif;font-size:32px;display:block;color:var(--ink)}
+.chart{display:flex;align-items:flex-end;gap:10px;height:160px;padding:14px;border:1.5px solid var(--line);
+  border-radius:12px;background:var(--paper)}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;justify-content:flex-end;height:100%}
+.bar i{display:block;width:100%;max-width:44px;border-radius:6px 6px 0 0;background:var(--red);opacity:.85}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{font-size:12.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft)}
+.qimg{width:100%;height:auto;border-radius:10px;border:1.5px solid var(--line);margin:8px 0;display:block;background:#fff}
+.imgdrop{border:2px dashed var(--line);border-radius:14px;padding:22px;text-align:center;margin-top:12px;
+  cursor:pointer;background:var(--paper);transition:border-color .2s,transform .2s;font-weight:600;color:var(--ink-soft)}
+.imgdrop.over{border-color:var(--red);transform:scale(1.01)}
 .katex{color:inherit;font-size:1.04em}
 .katex-display{margin:8px 0;overflow-x:auto;overflow-y:hidden;padding:2px}
+.hidden{display:none!important}
+@keyframes paperIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.card{animation:paperIn .5s cubic-bezier(.22,1,.36,1) both}
+main .card:nth-child(2){animation-delay:.06s} main .card:nth-child(3){animation-delay:.12s} main .card:nth-child(4){animation-delay:.18s}
+@keyframes stampIn{0%{opacity:0;transform:rotate(-4deg) scale(1.6)}60%{opacity:1;transform:rotate(-4deg) scale(.94)}100%{opacity:1;transform:rotate(-4deg) scale(1)}}
+.score-stamp{animation:stampIn .45s cubic-bezier(.22,1,.36,1) both}
+#quizBox.quiz-in{animation:paperIn .35s cubic-bezier(.22,1,.36,1) both}
+.view-in{animation:paperIn .4s cubic-bezier(.22,1,.36,1) both}
+@media (prefers-reduced-motion: reduce){
+  *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+  html{scroll-behavior:auto}
+}
+body.dark{--paper:#11162a; --paper2:#182036; --ink:#f2ecdc; --ink-soft:#a8b0c8;
+  --line:#2c3554; --line-soft:#232c48;
+  --shadow:0 18px 40px -18px rgba(0,0,0,.6);
+  background-image:radial-gradient(1200px 600px at 50% -10%,#1b2340 0%,var(--paper) 60%)}
+body.dark ::-webkit-scrollbar-track{background:var(--paper)}
+body.dark ::-webkit-scrollbar-thumb{background:#3a4568;border-color:var(--paper)}
+body.dark .topbar{background:#141b32;border-color:#f2ecdc}
+body.dark button.secondary{color:var(--ink);border-color:var(--ink)}
+body.dark button.secondary:hover{background:var(--ink);color:#11162a}
+body.dark button{box-shadow:0 10px 22px -10px rgba(0,0,0,.65)}
+body.dark button.green{box-shadow:0 10px 22px -10px rgba(0,0,0,.65)}
+body.dark button:hover{box-shadow:0 14px 26px -10px rgba(0,0,0,.7)}
+body.dark input,body.dark select,body.dark textarea{background:#10162b;border-color:var(--line);color:var(--ink)}
+body.dark input::placeholder,body.dark textarea::placeholder{color:#6b7594}
+body.dark input[type="file"]{background:#141b32;color:var(--ink-soft)}
+body.dark .checkline{background:#141b32}
+body.dark .sub{background:#141b32}
+body.dark .opt{background:#182036;color:var(--ink)}
+body.dark .opt:hover{background:#1f2947;border-color:var(--ink)}
+body.dark .opt-letter{border-color:var(--ink-soft);color:var(--ink-soft)}
+body.dark .opt.selected{background:#232c48}
+body.dark .opt.selected .opt-letter{background:var(--ink);border-color:var(--ink);color:#11162a}
+body.dark .opt.correct{background:#0e2a1d;border-color:var(--green)}
+body.dark .opt.wrong{background:#33100c;border-color:var(--red)}
+body.dark .navgrid button{background:#141b32;border-color:var(--line);color:var(--ink)}
+body.dark .navgrid button:hover{background:#1f2947}
+body.dark .navgrid button.done{background:var(--ink);color:#11162a;border-color:var(--ink)}
+body.dark .score-wrap{background:#141b32;border-color:var(--line)}
+body.dark .qcard{background:#182036}
+body.dark .stat{background:#141b32}
+body.dark .chart{background:#141b32}
+body.dark .imgdrop{background:#141b32}
+body.dark .stamp{color:#f0715f;border-color:#f0715f}
+body.dark header.hero h1 em{color:#f0715f}
+body.dark .logo svg{color:#f0715f}
+body.dark h2 svg{color:#f0715f}
+body.dark .score{color:#f0715f}
+body.dark .score-stamp{border-color:#f0715f}
+body.dark .timer{background:#f0715f;color:#33100c}
+body.dark .bar i{background:#f0715f}
+body.dark .progress>div{background:#f0715f}
+body.dark ::selection{background:#5c231b;color:#ffd9d2}
 
-/* Ảnh câu hỏi */
-.qimg{width:100%;height:auto;border-radius:12px;border:1px solid var(--line);margin:8px 0;display:block;background:#fff}
-.imgdrop{border:2px dashed #a5b4fc;border-radius:14px;padding:20px;text-align:center;margin-top:12px;cursor:pointer;background:rgba(255,255,255,.4);transition:transform .2s,background .2s}
-.imgdrop.over{border-color:#4f46e5;background:rgba(79,70,229,.08);transform:scale(1.01)}
-body.dark .imgdrop{background:rgba(255,255,255,.06);border-color:#6366f1}
 </style>
 </head>
+
 <body class="fs-1">
-<div class="orbs" aria-hidden="true"><i class="orb o1"></i><i class="orb o2"></i><i class="orb o3"></i></div>
 <div class="topbar">
-<div class="logo">🎓 Luyện Thi Pro<small>Ôn tập và thi thử, không cần đăng nhập</small></div>
+<div class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 9L12 4 2 9l10 5 10-5z"/><path d="M6 11.5V16c0 1.7 2.7 3 6 3s6-1.3 6-3v-4.5"/><path d="M22 9v5"/></svg><span>Luyện Thi Pro<small>Ôn tập và thi thử, không cần đăng nhập</small></span></div>
 <div class="nav">
 <button class="secondary small" id="navHome">Trang Chủ</button>
 <button class="secondary small" id="navHist">Lịch Sử</button>
@@ -255,26 +214,26 @@ body.dark .imgdrop{background:rgba(255,255,255,.06);border-color:#6366f1}
 
 <div id="homeView">
 <header class="hero">
-<div class="badge" style="background:rgba(255,255,255,.2);color:#fff">HỆ THỐNG LUYỆN THI 2026 • BẢN TỐI ƯU</div>
-<h1>Chinh Phục Mọi Kỳ Thi Trắc Nghiệm</h1>
-<p>Không còn trang trống, không cần chờ giáo viên up đề. Vào là có đề mẫu để luyện ngay, muốn dùng đề của mình thì nhập file là xong.</p>
-<div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
-<button style="background:#fff;color:#4f46e5;box-shadow:none" id="quickBtn">⚡ Luyện đề nhanh</button>
-<button class="secondary" id="quickReviewBtn" style="background:rgba(255,255,255,.2);color:#fff">📖 Ôn nhanh 1 môn</button>
+<span class="stamp">Hệ thống luyện thi 2026</span>
+<h1>Làm bài như <em>thi thật</em>, chấm như <em>giáo viên</em>.</h1>
+<p>Vào là có đề mẫu để luyện ngay, muốn dùng đề của mình thì nhập file là xong. Không còn trang trống, không cần chờ ai up đề.</p>
+<div class="hero-actions">
+<button id="quickBtn">Luyện đề nhanh</button>
+<button class="secondary" id="quickReviewBtn">Ôn nhanh 1 môn</button>
 </div>
-<div class="chips"><span>📄 .txt</span><span>📊 .csv</span><span>📝 .docx</span><span>📈 .xlsx</span><span>🌙 Chế độ tối</span><span>🔍 Tìm môn học</span></div>
+<div class="chips"><span>.txt</span><span>.csv</span><span>.docx</span><span>.xlsx</span><span>Công thức toán $...$</span><span>Chế độ tối</span><span>Tìm môn học</span></div>
 </header>
 <main>
 <section class="card">
-<h2>📚 Danh sách môn học</h2>
+<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Danh sách môn học</h2>
 <p class="muted">Chọn môn để ôn luyện hoặc thi thử. Mỗi file bạn nhập sẽ tự thành 1 môn mới ở đây.</p>
-<input id="searchInput" placeholder="🔍 Tìm môn học...">
+<input id="searchInput" placeholder="Tìm môn học...">
 <div class="grid-sub" id="subjectGrid"></div>
 <div id="emptySubjects" class="hidden ok" style="margin-top:14px">Chưa có môn nào? Bấm “Khôi phục đề mẫu” bên dưới là có đề luyện ngay.</div>
 </section>
 
 <section class="card">
-<h2>➕ Tạo môn mới từ file của bạn</h2>
+<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M12 18v-6M9 15h6"/></svg> Tạo môn mới từ file của bạn</h2>
 <p class="muted">Hỗ trợ .txt, .csv, .docx, .xlsx (chưa hỗ trợ PDF). File .docx, .xlsx và công thức toán cần mạng lần đầu để tải thư viện, còn .txt và .csv chạy offline. Mẹo: gõ công thức toán trong $...$, ví dụ $\int_0^1 x^2 dx$, web sẽ hiển thị đẹp như đề in.</p>
 <label>Tên môn học</label>
 <input id="subjectName" placeholder="Ví dụ: Toán, Tin học, Sinh học...">
@@ -288,20 +247,20 @@ body.dark .imgdrop{background:rgba(255,255,255,.06);border-color:#6366f1}
 <textarea id="pasteText" rows="7" placeholder="Câu 1: ...?&#10;A. ...&#10;B. ...&#10;Đáp án: A"></textarea>
 <button id="parsePasteBtn" style="margin-top:10px">Tách câu hỏi từ nội dung đã dán</button>
 </div>
-<div id="imgDrop" class="imgdrop">📷 Thả ảnh đề vào đây hoặc bấm để chọn<br><span class="muted" style="font-size:13px">Mỗi ảnh thành 1 câu hỏi, làm bài bằng nút A/B/C/D, chọn đáp án đúng ở bước xem trước</span></div>
+<div id="imgDrop" class="imgdrop">Thả ảnh đề vào đây hoặc bấm để chọn<br><span class="muted" style="font-size:13px">Mỗi ảnh thành 1 câu hỏi, làm bài bằng nút A/B/C/D, chọn đáp án đúng ở bước xem trước</span></div>
 <input type="file" id="imgInput" accept="image/*" multiple class="hidden">
 <div id="importMsg" style="margin-top:12px"></div>
 </section>
 
 <section class="card hidden" id="previewSection">
-<h2>✏️ Xem trước và sửa câu hỏi</h2>
+<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.8 2.8 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg> Xem trước và sửa câu hỏi</h2>
 <p class="muted">Sửa trực tiếp bên dưới, câu nào chưa có đáp án đúng thì phải chọn trước khi lưu thành môn.</p>
 <div id="previewList"></div>
-<button class="green" id="confirmBtn" style="width:100%;padding:14px">✅ Lưu thành môn học</button>
+<button class="green" id="confirmBtn" style="width:100%;padding:14px">Lưu thành môn học</button>
 </section>
 
 <section class="card hidden" id="setupSection">
-<h2>⚙️ Cài đặt bài làm: <span id="setupSubject"></span></h2>
+<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Cài đặt bài làm: <span id="setupSubject"></span></h2>
 <div class="row">
 <div><label>Số câu làm</label><input type="number" id="numQ" min="1" value="10"></div>
 <div><label>Thời gian thi thử (phút)</label><input type="number" id="timeMin" min="1" value="15"></div>
@@ -320,7 +279,7 @@ body.dark .imgdrop{background:rgba(255,255,255,.06);border-color:#6366f1}
 <div id="historyView" class="hidden">
 <main>
 <section class="card">
-<h2>📈 Lịch Sử Làm Bài Của Bạn</h2>
+<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 4 3 5-8"/></svg> Lịch sử làm bài của bạn</h2>
 <p class="muted">Theo dõi điểm số và sự tiến bộ qua từng lần làm bài.</p>
 <div class="stats">
 <div class="stat"><span class="muted">Tổng bài đã làm</span><b id="statTotal">0</b></div>
@@ -350,8 +309,8 @@ body.dark .imgdrop{background:rgba(255,255,255,.06);border-color:#6366f1}
 <div id="quizBox"></div>
 <div class="navgrid" id="quizNav" style="margin:14px 0"></div>
 <div style="display:flex;gap:10px;flex-wrap:wrap">
-<button class="secondary" id="prevBtn">◀ Câu trước</button>
-<button class="secondary" id="nextBtn">Câu sau ▶</button>
+<button class="secondary" id="prevBtn">Câu trước</button>
+<button class="secondary" id="nextBtn">Câu sau</button>
 <button class="green" id="finishBtn">Nộp bài / Xem kết quả</button>
 <button class="secondary" id="quitBtn">Thoát về trang chủ</button>
 </div>
@@ -362,8 +321,8 @@ body.dark .imgdrop{background:rgba(255,255,255,.06);border-color:#6366f1}
 <div id="resultView" class="hidden">
 <main>
 <section class="card">
-<h2>🎉 Hoàn Thành Bài Thi!</h2>
-<div class="score-wrap"><div class="score" id="scoreText"></div><p id="resultSummary" style="margin:0"></p><p class="muted" id="resultMeta" style="margin:6px 0 0"></p></div>
+<h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.1V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14l-3-3"/></svg> Hoàn thành bài thi</h2>
+<div class="score-wrap"><span class="score-stamp"><span class="score" id="scoreText"></span></span><p id="resultSummary" style="margin:14px 0 0"></p><p class="muted" id="resultMeta" style="margin:6px 0 0"></p></div>
 <div id="wrongList"></div>
 <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
 <button id="redoAllBtn">Làm lại toàn bộ</button>
@@ -710,7 +669,7 @@ function sampleSubjects(){
   let s7=parseText('Câu 1. Dùng đa thức Taylor bậc $3$ của $f(x)=e^x$ tại điểm $x=0$, tính xấp xỉ $e^\\left(0+0{,}1\\right)$.\nA. $e^\\left(0+0{,}1\\right) \\approx \\frac{(0{,}1)^{3}}{6} + \\frac{(0{,}1)^{2}}{2} + (0{,}1) + 1$\nB. $e^\\left(0+0{,}1\\right) \\approx \\frac{(0{,}1)^{2}}{2} + (0{,}1) + 1$\nC. $e^\\left(0+0{,}1\\right) \\approx \\frac{(0{,}1)^{3}}{6} + \\frac{(0{,}1)^{2}}{2} - (0{,}1) + 1$\nD. $e^\\left(0+0{,}1\\right) \\approx - \\frac{(0{,}1)^{3}}{6} + \\frac{(0{,}1)^{2}}{2} + (0{,}1) + 1$\nĐáp án: A\nGiải thích: Đa thức Taylor: $T_{3}(x)=\\frac{x^{3}}{6} + \\frac{x^{2}}{2} + x + 1$. Thay $x=0+0{,}1$ được $e^\\left(0+0{,}1\\right)\\approx \\frac{(0{,}1)^{3}}{6} + \\frac{(0{,}1)^{2}}{2} + (0{,}1) + 1$.\n\nCâu 2. Cho $f(x)=3x^2+\\sin^2 2x+\\ln(1+3x^2)+\\arctan^2 x+x^5$. Khi $x\\to 0$ thì\nA. $f(x)\\sim 4x^2$\nB. $f(x)\\sim 5x^3$\nC. $f(x)\\sim 11x^2$\nD. $f(x)\\sim 10x^2$\nĐáp án: C\nGiải thích: Số hạng trội nhất là $11 x^{2}$, vậy $f(x)\\sim 11x^2$.\n\nCâu 3. Cho hàm số $f(x)=\\ln x$. Khai triển Taylor cấp $2$ của $f(x)$ tại điểm $x=1$ là\nA. $f(x)=- \\frac{(x-1)^{2}}{2} - (x-1)+o((x-1)^{2})$\nB. $f(x)=- \\frac{(x-1)^{2}}{2} + (x-1)+o((x-1)^{2})$\nC. $f(x)=\\frac{(x-1)^{2}}{2} + (x-1)+o((x-1)^{2})$\nD. $f(x)=(x-1)+o((x-1)^{2})$\nĐáp án: B\nGiải thích: $f(x)=- \\frac{(x-1)^{2}}{2} + (x-1)+o((x-1)^{2})$.\n\nCâu 4. Cho hàm số $f(x)=\\sqrt{1+\\sin x}$. Tính đạo hàm của $y=f(x)$ tại điểm $x=0$.\nA. $f\'\\left(0\\right)=- \\frac{1}{2}$\nB. $f\'\\left(0\\right)=\\frac{3}{2}$\nC. $f\'\\left(0\\right)=\\frac{1}{2}$\nD. $f\'\\left(0\\right)=\\frac{1}{4}$\nĐáp án: C\nGiải thích: $f\'(x)=\\frac{\\cos{\\left(x \\right)}}{2 \\sqrt{\\sin{\\left(x \\right)} + 1}}$, suy ra $f\'(0)=\\frac{1}{2}$.\n\nCâu 5. Cho $f(x)=x+e^x-1+\\sin x+\\tan x+x^2$. Khi $x\\to 0$ thì\nA. $f(x)\\sim 5x^3$\nB. $f(x)\\sim 4x$\nC. $f(x)\\sim 4x^2$\nD. $f(x)\\sim 10x^2$\nĐáp án: B\nGiải thích: Số hạng trội nhất là $4 x$, vậy $f(x)\\sim 4x$.\n\nCâu 6. Cho hàm số $f(x)=x^5+x+2$. Đạo hàm của hàm ngược $y=f^{-1}(x)$ là\nA. $(f^{-1})\'(x)=5 y^{4} + 1$\nB. $(f^{-1})\'(x)=\\frac{1}{5 x^{4} + 1}$\nC. $(f^{-1})\'(x)=\\frac{1}{5 y^{4} + 1}$\nD. $(f^{-1})\'(x)=5 x^{4} + 1$\nĐáp án: C\nGiải thích: $(f^{-1})\'(x)=\\dfrac{1}{f\'(y)}$ với $y=f^{-1}(x)$, tức $(f^{-1})\'(x)=\\dfrac{1}{5 y^{4} + 1}$.\n\nCâu 7. Tìm đạo hàm $y\'(x)$ của hàm ẩn được cho bởi phương trình $e^{xy}=x+y$.\nA. $y\'=\\frac{y e^{x y} - 1}{x e^{x y} - 1}$\nB. $y\'=\\frac{- x e^{x y} + 1}{y e^{x y} - 1}$\nC. $y\'=0$\nD. $y\'=\\frac{- y e^{x y} + 1}{x e^{x y} - 1}$\nĐáp án: D\nGiải thích: Đạo hàm hai vế theo $x$ rồi giải ra $y\'$, được $y\'=\\frac{- y e^{x y} + 1}{x e^{x y} - 1}$.\n\nCâu 8. Cho hàm số $f(x)=\\cos 3x$. Khai triển Taylor tại $x=0$ (còn được gọi là khai triển Maclaurin) cấp $2$ của $f(x)$ là\nA. $f(x)=1 - \\frac{9 x^{2}}{2}+o(x^{2})$\nB. $f(x)=- \\frac{9 x^{2}}{2} + x + 1+o(x^{2})$\nC. $f(x)=1+o(x^{2})$\nD. $f(x)=\\frac{9 x^{2}}{2} + 1+o(x^{2})$\nĐáp án: A\nGiải thích: $f(x)=1 - \\frac{9 x^{2}}{2}+o(x^{2})$.\n\nCâu 9. Cho hàm số $y=f(x)$ được xác định bởi: $\\begin{cases}x=e^t\\\\y=t^2\\end{cases},t$. Tính $f\'(x)$.\nA. $f\'(x)=2 t e^{- t}$\nB. $f\'(x)=\\frac{e^{t}}{2 t}$\nC. $f\'(x)=0$\nD. $f\'(x)=- 2 t e^{- t}$\nĐáp án: A\nGiải thích: $f\'(x)=\\dfrac{y\'(t)}{x\'(t)}=2 t e^{- t}$.\n\nCâu 10. Tích phân $I=\\int_0^{+\\infty}xe^{-x}\\,dx$ bằng\nA. $I=\\lim_{a\\to+\\infty}\\left[0-(a+0)e^{-a}\\right]=0$\nB. $I=+\\infty$\nC. $I=\\lim_{a\\to+\\infty}\\left[1-(a+1)e^{-a}\\right]=1$\nD. $I=\\lim_{a\\to 0^+}\\left[1-(a+1)e^{-a}\\right]=1$\nĐáp án: C\nGiải thích: $I=\\lim_{a\\to+\\infty}\\left[1-(a+1)e^{-a}\\right]=1$.\n\nCâu 11. Nghiệm tổng quát của phương trình vi phân $\\frac{dy}{dx}=\\frac{x+1}{y}$ là\nA. $2y^2=x^2+2x+C$\nB. $y^2=x^2+C$\nC. $y^2=x^2+2x+C$\nD. $y=x^2+2x+C$\nĐáp án: C\nGiải thích: Tách biến, lấy tích phân hai vế: $y^2=x^2+2x+C$.\n\nCâu 12. Diện tích $S$ của mặt tròn xoay khi quay cung $y=x^2,\\ 0\\le x\\le 1$ quanh trục $Ox$ được tính là\nA. $S=2\\pi\\int_0^1x^2\\sqrt{1+4x^2}\\,dx$\nB. $S=2\\pi\\int y\\,dx$\nC. $S=\\pi\\int_0^1x^2\\sqrt{1+4x^2}\\,dx$\nD. $S=2\\pi\\int_0^1x^2(1+4x^2)\\,dx$\nĐáp án: A\nGiải thích: $S=2\\pi\\int_a^b|f(x)|\\sqrt{1+[f\'(x)]^2}\\,dx$, tức $S=2\\pi\\int_0^1x^2\\sqrt{1+4x^2}\\,dx$.\n\nCâu 13. Theo tiêu chuẩn so sánh 2, tích phân $\\int_0^1\\frac{dx}{\\sqrt{x}(1+x)}$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_0^1\\frac{dx}{1+x}$\nB. $\\int_0^1\\frac{dx}{x}$\nC. $\\int_0^1\\frac{dx}{\\sqrt{x}}$\nD. $\\int_0^1\\sqrt{x}\\,dx$\nĐáp án: C\nGiải thích: Tử và mẫu tương đương tại điểm bất thường, nên cùng tính hội tụ với $\\int_0^1\\frac{dx}{\\sqrt{x}}$.\n\nCâu 14. Tích phân $I=\\int_2^{+\\infty}\\frac{dx}{x^2}$ bằng\nA. $I=\\lim_{a\\to+\\infty}\\left(\\frac{1}{2}-\\frac{1}{a}\\right)=\\frac{1}{2}$\nB. $I=\\lim_{a\\to+\\infty}\\left(1-\\frac{1}{a}\\right)=1$\nC. $I=\\lim_{a\\to+\\infty}\\left(0-\\frac{1}{a}\\right)=0$\nD. $I=+\\infty$\nĐáp án: A\nGiải thích: $I=\\lim_{a\\to+\\infty}\\left(\\frac{1}{2}-\\frac{1}{a}\\right)=\\frac{1}{2}$.\n\nCâu 15. Tích phân $I=\\int_0^1\\ln x\\,dx$ bằng\nA. $I=\\lim_{a\\to 0^+}\\left(0-a\\ln a+a\\right)=0$\nB. $I=\\lim_{a\\to 0^+}\\left(-1-a\\ln a+a\\right)=-1$\nC. $I=+\\infty$\nD. $I=\\lim_{a\\to 0^+}\\left(1-a\\ln a+a\\right)=1$\nĐáp án: B\nGiải thích: $I=\\lim_{a\\to 0^+}\\left(-1-a\\ln a+a\\right)=-1$.\n\nCâu 16. Theo tiêu chuẩn so sánh 2, tích phân $\\int_2^{+\\infty}\\frac{dx}{x^3-x}$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_2^{+\\infty}\\frac{dx}{x^3}$\nB. $\\int_2^{+\\infty}\\frac{dx}{x^4}$\nC. $\\int_2^{+\\infty}\\frac{dx}{x^2}$\nD. $\\int_2^{+\\infty}\\frac{dx}{x}$\nĐáp án: A\nGiải thích: Tỉ số hai hàm dưới dấu tích phân dần tới $1\\ne 0$, nên cùng tính hội tụ với $\\int_2^{+\\infty}\\frac{dx}{x^3}$.\n\nCâu 17. Thể tích của khối tròn xoay khi quay hình phẳng được giới hạn bởi các đường $y=2x,\\ y=x^2$ quanh trục $Ox$ là\nA. $\\frac{49\\pi}{15}$\nB. $\\frac{79\\pi}{15}$\nC. $\\frac{64\\pi}{15}$\nD. $\\frac{94\\pi}{15}$\nĐáp án: C\nGiải thích: $V=\\pi\\int_{0}^{2}\\left|(2 x)^2-(x^{2})^2\\right|dx=\\frac{64\\pi}{15}$.\n\nCâu 18. Nghiệm riêng của phương trình vi phân $y\'-y=2x,\\ y(0)=1$ là\nA. $y=- 2 x + 3 e^{x} - 2$\nB. $y=2 x - 3 e^{x} + 2$\nC. $y=- 2 x - 2$\nD. $y=- 2 x + 3 e^{x} - 1$\nĐáp án: A\nGiải thích: Nhân thừa số tích phân $\\mu(x)=e^{- x}$, lấy tích phân rồi dùng $y(0)=1$: $y=- 2 x + 3 e^{x} - 2$.\n\nCâu 19. Tính diện tích miền phẳng giới hạn bởi 2 đường: $y=x^3,\\ y=x\\ (x\\ge 0)$.\nA. $\\frac{-3}{4}$\nB. $\\frac{5}{4}$\nC. $\\frac{1}{2}$\nD. $\\frac{1}{4}$\nĐáp án: D\nGiải thích: $S=\\int_{0}^{1}\\left|(x^{3})-(x)\\right|dx=\\frac{1}{4}$.\n\nCâu 20. Tích phân $I=\\int_1^2\\frac{dx}{\\sqrt{x-1}}$ bằng\nA. $I=\\lim_{a\\to 1^+}0\\left(1-\\sqrt{a-1}\\right)=0$\nB. $I=\\lim_{a\\to 1^+}1\\left(1-\\sqrt{a-1}\\right)=1$\nC. $I=+\\infty$\nD. $I=\\lim_{a\\to 1^+}2\\left(1-\\sqrt{a-1}\\right)=2$\nĐáp án: D\nGiải thích: $I=\\lim_{a\\to 1^+}2\\left(1-\\sqrt{a-1}\\right)=2$.');
   let s8=parseText('Câu 1. Dùng đa thức Taylor bậc $3$ của $f(x)=\\ln(1+x)$ tại điểm $x=0$, tính xấp xỉ $\\ln(1+\\left(0+0{,}1\\right))$.\nA. $\\ln(1+\\left(0+0{,}1\\right)) \\approx - \\frac{(0{,}1)^{3}}{3} - \\frac{(0{,}1)^{2}}{2} + (0{,}1)$\nB. $\\ln(1+\\left(0+0{,}1\\right)) \\approx \\frac{(0{,}1)^{3}}{3} - \\frac{(0{,}1)^{2}}{2} + (0{,}1)$\nC. $\\ln(1+\\left(0+0{,}1\\right)) \\approx \\frac{(0{,}1)^{3}}{3} - \\frac{(0{,}1)^{2}}{2} - (0{,}1)$\nD. $\\ln(1+\\left(0+0{,}1\\right)) \\approx - \\frac{(0{,}1)^{2}}{2} + (0{,}1)$\nĐáp án: B\nGiải thích: Đa thức Taylor: $T_{3}(x)=\\frac{x^{3}}{3} - \\frac{x^{2}}{2} + x$. Thay $x=0+0{,}1$ được $\\ln(1+\\left(0+0{,}1\\right))\\approx \\frac{(0{,}1)^{3}}{3} - \\frac{(0{,}1)^{2}}{2} + (0{,}1)$.\n\nCâu 2. Cho $f(x)=x^3+e^x-1-x+\\sin^3 x$. Khi $x\\to 0$ thì\nA. $f(x)\\sim 5x^3$\nB. $f(x)\\sim 4x^2$\nC. $f(x)\\sim 10x^2$\nD. $f(x)\\sim \\frac{x^2}{2}$\nĐáp án: D\nGiải thích: Số hạng trội nhất là $\\frac{x^{2}}{2}$, vậy $f(x)\\sim \\frac{x^2}{2}$.\n\nCâu 3. Cho hàm số $f(x)=\\frac{1}{x}$. Khai triển Taylor cấp $2$ của $f(x)$ tại điểm $x=1$ là\nA. $f(x)=- (x-1)^{2} - (x-1) + 1+o((x-1)^{2})$\nB. $f(x)=(x-1)^{2} + (x-1) + 1+o((x-1)^{2})$\nC. $f(x)=1 - (x-1)+o((x-1)^{2})$\nD. $f(x)=(x-1)^{2} - (x-1) + 1+o((x-1)^{2})$\nĐáp án: D\nGiải thích: $f(x)=(x-1)^{2} - (x-1) + 1+o((x-1)^{2})$.\n\nCâu 4. Cho hàm số $f(x)=\\arctan(e^x)$. Tính đạo hàm của $y=f(x)$ tại điểm $x=0$.\nA. $f\'\\left(0\\right)=\\frac{1}{2}$\nB. $f\'\\left(0\\right)=\\frac{1}{4}$\nC. $f\'\\left(0\\right)=- \\frac{1}{2}$\nD. $f\'\\left(0\\right)=\\frac{3}{2}$\nĐáp án: A\nGiải thích: $f\'(x)=\\frac{e^{x}}{e^{2 x} + 1}$, suy ra $f\'(0)=\\frac{1}{2}$.\n\nCâu 5. Cho $f(x)=\\ln(1+x^2)+\\sin^2 x+x^3$. Khi $x\\to 0$ thì\nA. $f(x)\\sim 10x^2$\nB. $f(x)\\sim 2x^2$\nC. $f(x)\\sim 5x^3$\nD. $f(x)\\sim 4x^2$\nĐáp án: B\nGiải thích: Số hạng trội nhất là $2 x^{2}$, vậy $f(x)\\sim 2x^2$.\n\nCâu 6. Cho hàm số $f(x)=e^x+x$. Đạo hàm của hàm ngược $y=f^{-1}(x)$ là\nA. $(f^{-1})\'(x)=\\frac{1}{e^{y} + 1}$\nB. $(f^{-1})\'(x)=e^{x} + 1$\nC. $(f^{-1})\'(x)=e^{y} + 1$\nD. $(f^{-1})\'(x)=\\frac{1}{e^{x} + 1}$\nĐáp án: A\nGiải thích: $(f^{-1})\'(x)=\\dfrac{1}{f\'(y)}$ với $y=f^{-1}(x)$, tức $(f^{-1})\'(x)=\\dfrac{1}{e^{y} + 1}$.\n\nCâu 7. Tìm đạo hàm $y\'(x)$ của hàm ẩn được cho bởi phương trình $\\sin(xy)=x$.\nA. $y\'=- \\frac{x \\cos{\\left(x y \\right)}}{y \\cos{\\left(x y \\right)} - 1}$\nB. $y\'=0$\nC. $y\'=\\frac{y - \\frac{1}{\\cos{\\left(x y \\right)}}}{x}$\nD. $y\'=\\frac{- y + \\frac{1}{\\cos{\\left(x y \\right)}}}{x}$\nĐáp án: D\nGiải thích: Đạo hàm hai vế theo $x$ rồi giải ra $y\'$, được $y\'=\\frac{- y + \\frac{1}{\\cos{\\left(x y \\right)}}}{x}$.\n\nCâu 8. Cho hàm số $f(x)=\\ln(1+2x)$. Khai triển Taylor tại $x=0$ (còn được gọi là khai triển Maclaurin) cấp $2$ của $f(x)$ là\nA. $f(x)=2 x+o(x^{2})$\nB. $f(x)=2 x^{2} + 2 x+o(x^{2})$\nC. $f(x)=- 2 x^{2} - 2 x+o(x^{2})$\nD. $f(x)=- 2 x^{2} + 2 x+o(x^{2})$\nĐáp án: D\nGiải thích: $f(x)=- 2 x^{2} + 2 x+o(x^{2})$.\n\nCâu 9. Cho hàm số $y=f(x)$ được xác định bởi: $\\begin{cases}x=t^3\\\\y=t^2\\end{cases},t\\ne 0$. Tính $f\'(x)$.\nA. $f\'(x)=\\frac{3 t}{2}$\nB. $f\'(x)=0$\nC. $f\'(x)=- \\frac{2}{3 t}$\nD. $f\'(x)=\\frac{2}{3 t}$\nĐáp án: D\nGiải thích: $f\'(x)=\\dfrac{y\'(t)}{x\'(t)}=\\frac{2}{3 t}$.\n\nCâu 10. Tích phân $I=\\int_0^{+\\infty}\\frac{dx}{(1+x)^2}$ bằng\nA. $I=\\lim_{a\\to+\\infty}\\left(0-\\frac{0}{0+a}\\right)=0$\nB. $I=\\lim_{a\\to 0^+}\\left(1-\\frac{1}{1+a}\\right)=1$\nC. $I=\\lim_{a\\to+\\infty}\\left(1-\\frac{1}{1+a}\\right)=1$\nD. $I=+\\infty$\nĐáp án: C\nGiải thích: $I=\\lim_{a\\to+\\infty}\\left(1-\\frac{1}{1+a}\\right)=1$.\n\nCâu 11. Nghiệm tổng quát của phương trình vi phân $\\frac{dy}{dx}=e^{x-y}$ là\nA. $e^y=e^x+C$\nB. $e^y=e^x\\cdot C$\nC. $y=x+C$\nD. $e^{x+y}=C$\nĐáp án: A\nGiải thích: Tách biến, lấy tích phân hai vế: $e^y=e^x+C$.\n\nCâu 12. Diện tích $S$ của mặt tròn xoay khi quay cung $y=e^x,\\ 0\\le x\\le 1$ quanh trục $Ox$ được tính là\nA. $S=2\\pi\\int_0^1e^x(1+e^{2x})\\,dx$\nB. $S=2\\pi\\int_0^1e^x\\sqrt{1+e^{2x}}\\,dx$\nC. $S=2\\pi\\int y\\,dx$\nD. $S=\\pi\\int_0^1e^x\\sqrt{1+e^{2x}}\\,dx$\nĐáp án: B\nGiải thích: $S=2\\pi\\int_a^b|f(x)|\\sqrt{1+[f\'(x)]^2}\\,dx$, tức $S=2\\pi\\int_0^1e^x\\sqrt{1+e^{2x}}\\,dx$.\n\nCâu 13. Theo tiêu chuẩn so sánh 2, tích phân $\\int_0^1\\frac{1+x^2}{\\sqrt[3]{1-x}}\\,dx$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_0^1\\frac{dx}{\\sqrt[3]{1-x}}$\nB. $\\int_0^1\\frac{dx}{\\sqrt{1-x}}$\nC. $\\int_0^1\\frac{dx}{1-x}$\nD. $\\int_0^1(1+x^2)\\,dx$\nĐáp án: A\nGiải thích: Tử và mẫu tương đương tại điểm bất thường, nên cùng tính hội tụ với $\\int_0^1\\frac{dx}{\\sqrt[3]{1-x}}$.\n\nCâu 14. Tích phân $I=\\int_1^{+\\infty}\\frac{dx}{x^2+2x+1}$ bằng\nA. $I=\\lim_{a\\to+\\infty}\\left(0-\\frac{1}{a+1}\\right)=0$\nB. $I=+\\infty$\nC. $I=\\lim_{a\\to+\\infty}\\left(1-\\frac{1}{a+1}\\right)=1$\nD. $I=\\lim_{a\\to+\\infty}\\left(\\frac{1}{2}-\\frac{1}{a+1}\\right)=\\frac{1}{2}$\nĐáp án: D\nGiải thích: $I=\\lim_{a\\to+\\infty}\\left(\\frac{1}{2}-\\frac{1}{a+1}\\right)=\\frac{1}{2}$.\n\nCâu 15. Tích phân $I=\\int_0^1\\frac{dx}{(1-x)^{2/3}}$ bằng\nA. $I=+\\infty$\nB. $I=\\lim_{a\\to 1^-}3\\left[1-(1-a)^{1/3}\\right]=3$\nC. $I=\\lim_{a\\to 1^-}1\\left[1-(1-a)^{1/1}\\right]=1$\nD. $I=\\lim_{a\\to 1^-}0\\left[1-(1-a)^{1/0}\\right]=0$\nĐáp án: B\nGiải thích: $I=\\lim_{a\\to 1^-}3\\left[1-(1-a)^{1/3}\\right]=3$.\n\nCâu 16. Theo tiêu chuẩn so sánh 2, tích phân $\\int_1^{+\\infty}\\frac{3x^2+2}{x^4+1}\\,dx$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_1^{+\\infty}\\frac{2}{x^4}\\,dx$\nB. $\\int_1^{+\\infty}\\frac{3x^2}{x^4}\\,dx$\nC. $\\int_1^{+\\infty}\\frac{dx}{x^4}$\nD. $\\int_1^{+\\infty}\\frac{dx}{x^2}$\nĐáp án: D\nGiải thích: Tỉ số hai hàm dưới dấu tích phân dần tới $3\\ne 0$, nên cùng tính hội tụ với $\\int_1^{+\\infty}\\frac{dx}{x^2}$.\n\nCâu 17. Thể tích của khối tròn xoay khi quay hình phẳng được giới hạn bởi các đường $y=\\sqrt{x},\\ y=x$ quanh trục $Ox$ là\nA. $\\frac{-5\\pi}{6}$\nB. $\\frac{1\\pi}{6}$\nC. $\\frac{7\\pi}{6}$\nD. $\\frac{13\\pi}{6}$\nĐáp án: B\nGiải thích: $V=\\pi\\int_{0}^{1}\\left|(\\sqrt{x})^2-(x)^2\\right|dx=\\frac{1\\pi}{6}$.\n\nCâu 18. Nghiệm riêng của phương trình vi phân $y\'-\\frac{1}{x}y=x,\\ y(1)=0$ là\nA. $y=x \\left(x - 1\\right)$\nB. $y=x^{2}$\nC. $y=x \\left(x - 1\\right) + 1$\nD. $y=x \\left(1 - x\\right)$\nĐáp án: A\nGiải thích: Nhân thừa số tích phân $\\mu(x)=\\frac{1}{x}$, lấy tích phân rồi dùng $y(1)=0$: $y=x \\left(x - 1\\right)$.\n\nCâu 19. Tính diện tích miền phẳng giới hạn bởi 2 đường: $y=4-x^2,\\ y=0$.\nA. $\\frac{29}{3}$\nB. $\\frac{32}{3}$\nC. $\\frac{64}{3}$\nD. $\\frac{35}{3}$\nĐáp án: B\nGiải thích: $S=\\int_{-2}^{2}\\left|(4 - x^{2})-(0)\\right|dx=\\frac{32}{3}$.\n\nCâu 20. Tích phân $I=\\int_0^2\\frac{dx}{\\sqrt{2-x}}$ bằng\nA. $I=\\lim_{a\\to 2^-}2\\left(\\sqrt{2}-\\sqrt{2-a}\\right)=1$\nB. $I=\\lim_{a\\to 2^-}2\\left(\\sqrt{2}-\\sqrt{2-a}\\right)=0$\nC. $I=+\\infty$\nD. $I=\\lim_{a\\to 2^-}2\\left(\\sqrt{2}-\\sqrt{2-a}\\right)=2\\sqrt{2}$\nĐáp án: D\nGiải thích: $I=\\lim_{a\\to 2^-}2\\left(\\sqrt{2}-\\sqrt{2-a}\\right)=2\\sqrt{2}$.');
   let s9=parseText('Câu 1. Dùng đa thức Taylor bậc $2$ của $f(x)=\\sqrt{1+x}$ tại điểm $x=0$, tính xấp xỉ $\\sqrt{1+\\left(0+0{,}02\\right)}$.\nA. $\\sqrt{1+\\left(0+0{,}02\\right)} \\approx \\frac{(0{,}02)^{2}}{8} + \\frac{(0{,}02)}{2} + 1$\nB. $\\sqrt{1+\\left(0+0{,}02\\right)} \\approx - \\frac{(0{,}02)^{2}}{8} - \\frac{(0{,}02)}{2} + 1$\nC. $\\sqrt{1+\\left(0+0{,}02\\right)} \\approx \\frac{(0{,}02)}{2} + 1$\nD. $\\sqrt{1+\\left(0+0{,}02\\right)} \\approx - \\frac{(0{,}02)^{2}}{8} + \\frac{(0{,}02)}{2} + 1$\nĐáp án: D\nGiải thích: Đa thức Taylor: $T_{2}(x)=- \\frac{x^{2}}{8} + \\frac{x}{2} + 1$. Thay $x=0+0{,}02$ được $\\sqrt{1+\\left(0+0{,}02\\right)}\\approx - \\frac{(0{,}02)^{2}}{8} + \\frac{(0{,}02)}{2} + 1$.\n\nCâu 2. Cho $f(x)=2x^2+\\tan^2 x+3\\arcsin^2 x+\\ln(1+x^2)$. Khi $x\\to 0$ thì\nA. $f(x)\\sim 4x^2$\nB. $f(x)\\sim 7x^2$\nC. $f(x)\\sim 10x^2$\nD. $f(x)\\sim 5x^3$\nĐáp án: B\nGiải thích: Số hạng trội nhất là $7 x^{2}$, vậy $f(x)\\sim 7x^2$.\n\nCâu 3. Cho hàm số $f(x)=\\arctan x$. Khai triển Taylor cấp $2$ của $f(x)$ tại điểm $x=1$ là\nA. $f(x)=- \\frac{(x-1)^{2}}{4} - \\frac{(x-1)}{2} + \\frac{\\pi}{4}+o((x-1)^{2})$\nB. $f(x)=\\frac{(x-1)}{2} + \\frac{\\pi}{4}+o((x-1)^{2})$\nC. $f(x)=- \\frac{(x-1)^{2}}{4} + \\frac{(x-1)}{2} + \\frac{\\pi}{4}+o((x-1)^{2})$\nD. $f(x)=\\frac{(x-1)^{2}}{4} + \\frac{(x-1)}{2} + \\frac{\\pi}{4}+o((x-1)^{2})$\nĐáp án: C\nGiải thích: $f(x)=- \\frac{(x-1)^{2}}{4} + \\frac{(x-1)}{2} + \\frac{\\pi}{4}+o((x-1)^{2})$.\n\nCâu 4. Cho hàm số $f(x)=(x^2+1)^3$. Tính đạo hàm của $y=f(x)$ tại điểm $x=1$.\nA. $f\'\\left(1\\right)=-24$\nB. $f\'\\left(1\\right)=12$\nC. $f\'\\left(1\\right)=25$\nD. $f\'\\left(1\\right)=24$\nĐáp án: D\nGiải thích: $f\'(x)=6 x \\left(x^{2} + 1\\right)^{2}$, suy ra $f\'(1)=24$.\n\nCâu 5. Cho $f(x)=x+\\ln(1+3x)+\\sin^2 x+e^{2x}-1-2x$. Khi $x\\to 0$ thì\nA. $f(x)\\sim 5x^3$\nB. $f(x)\\sim 4x^2$\nC. $f(x)\\sim 10x^2$\nD. $f(x)\\sim 2x$\nĐáp án: D\nGiải thích: Số hạng trội nhất là $4 x$, vậy $f(x)\\sim 2x$.\n\nCâu 6. Cho hàm số $f(x)=2x^3+x$. Đạo hàm của hàm ngược $y=f^{-1}(x)$ là\nA. $(f^{-1})\'(x)=6 y^{2} + 1$\nB. $(f^{-1})\'(x)=\\frac{1}{6 x^{2} + 1}$\nC. $(f^{-1})\'(x)=6 x^{2} + 1$\nD. $(f^{-1})\'(x)=\\frac{1}{6 y^{2} + 1}$\nĐáp án: D\nGiải thích: $(f^{-1})\'(x)=\\dfrac{1}{f\'(y)}$ với $y=f^{-1}(x)$, tức $(f^{-1})\'(x)=\\dfrac{1}{6 y^{2} + 1}$.\n\nCâu 7. Tìm đạo hàm $y\'(x)$ của hàm ẩn được cho bởi phương trình $y=xe^y$.\nA. $y\'=- \\frac{e^{y}}{x e^{y} - 1}$\nB. $y\'=\\frac{e^{y}}{x e^{y} - 1}$\nC. $y\'=0$\nD. $y\'=- x + e^{- y}$\nĐáp án: A\nGiải thích: Đạo hàm hai vế theo $x$ rồi giải ra $y\'$, được $y\'=- \\frac{e^{y}}{x e^{y} - 1}$.\n\nCâu 8. Cho hàm số $f(x)=\\frac{1}{1+2x}$. Khai triển Taylor tại $x=0$ (còn được gọi là khai triển Maclaurin) cấp $2$ của $f(x)$ là\nA. $f(x)=4 x^{2} - 2 x + 1+o(x^{2})$\nB. $f(x)=- 4 x^{2} - 2 x + 1+o(x^{2})$\nC. $f(x)=1 - 2 x+o(x^{2})$\nD. $f(x)=4 x^{2} + 2 x + 1+o(x^{2})$\nĐáp án: A\nGiải thích: $f(x)=4 x^{2} - 2 x + 1+o(x^{2})$.\n\nCâu 9. Cho hàm số $y=f(x)$ được xác định bởi: $\\begin{cases}x=\\ln(1+t)\\\\y=e^t\\end{cases},t>0$. Tính $f\'(x)$.\nA. $f\'(x)=\\left(t + 1\\right) e^{t}$\nB. $f\'(x)=\\frac{e^{- t}}{t + 1}$\nC. $f\'(x)=0$\nD. $f\'(x)=\\left(- t - 1\\right) e^{t}$\nĐáp án: A\nGiải thích: $f\'(x)=\\dfrac{y\'(t)}{x\'(t)}=\\left(t + 1\\right) e^{t}$.\n\nCâu 10. Tích phân $I=\\int_0^{+\\infty}e^{-x}\\sin x\\,dx$ bằng\nA. $I=\\lim_{a\\to+\\infty}\\frac{1-e^{-a}(\\sin a+\\cos a)}{2}=1$\nB. $I=\\lim_{a\\to+\\infty}\\frac{1-e^{-a}(\\sin a+\\cos a)}{2}=\\frac{1}{2}$\nC. $I=\\lim_{a\\to+\\infty}\\frac{1-e^{-a}(\\sin a+\\cos a)}{2}=0$\nD. $I=+\\infty$\nĐáp án: B\nGiải thích: $I=\\lim_{a\\to+\\infty}\\frac{1-e^{-a}(\\sin a+\\cos a)}{2}=\\frac{1}{2}$.\n\nCâu 11. Nghiệm tổng quát của phương trình vi phân $\\cos y\\,dy=\\sin x\\,dx$ là\nA. $\\sin y=-\\cos x+C$\nB. $\\cos y=\\sin x+C$\nC. $\\sin y=\\cos x+C$\nD. $-\\sin y=\\cos x+C$\nĐáp án: A\nGiải thích: Tách biến, lấy tích phân hai vế: $\\sin y=-\\cos x+C$.\n\nCâu 12. Diện tích $S$ của mặt tròn xoay khi quay cung $y=x^3,\\ 0\\le x\\le 1$ quanh trục $Ox$ được tính là\nA. $S=2\\pi\\int_0^1x^3\\sqrt{1+9x^4}\\,dx$\nB. $S=\\pi\\int_0^1x^3\\sqrt{1+9x^4}\\,dx$\nC. $S=2\\pi\\int_0^1x^3(1+9x^4)\\,dx$\nD. $S=2\\pi\\int y\\,dx$\nĐáp án: A\nGiải thích: $S=2\\pi\\int_a^b|f(x)|\\sqrt{1+[f\'(x)]^2}\\,dx$, tức $S=2\\pi\\int_0^1x^3\\sqrt{1+9x^4}\\,dx$.\n\nCâu 13. Theo tiêu chuẩn so sánh 2, tích phân $\\int_1^2\\frac{dx}{(x-1)\\sqrt{x+1}}$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_1^2\\frac{dx}{(x-1)^2}$\nB. $\\int_1^2\\frac{dx}{x-1}$\nC. $\\int_1^2\\frac{dx}{\\sqrt{x-1}}$\nD. $\\int_1^2dx$\nĐáp án: B\nGiải thích: Tử và mẫu tương đương tại điểm bất thường, nên cùng tính hội tụ với $\\int_1^2\\frac{dx}{x-1}$.\n\nCâu 14. Tích phân $I=\\int_1^{+\\infty}\\frac{\\ln x}{x^2}\\,dx$ bằng\nA. $I=+\\infty$\nB. $I=\\lim_{a\\to 0^+}\\left[1-\\frac{\\ln a+1}{a}\\right]=1$\nC. $I=\\lim_{a\\to+\\infty}\\left[1-\\frac{\\ln a+1}{a}\\right]=1$\nD. $I=\\lim_{a\\to+\\infty}\\left[0-\\frac{\\ln a+0}{a}\\right]=0$\nĐáp án: C\nGiải thích: $I=\\lim_{a\\to+\\infty}\\left[1-\\frac{\\ln a+1}{a}\\right]=1$.\n\nCâu 15. Tích phân $I=\\int_0^1\\frac{x\\,dx}{\\sqrt{1-x^2}}$ bằng\nA. $I=\\lim_{a\\to 0^-}\\left(0-\\sqrt{0-a^2}\\right)=0$\nB. $I=\\lim_{a\\to 1^-}\\left(1-\\sqrt{1-a^2}\\right)=1$\nC. $I=\\lim_{a\\to 1^-}\\left(1-\\sqrt{1-a^2}\\right)=1\\quad(1)$\nD. $I=+\\infty$\nĐáp án: B\nGiải thích: $I=\\lim_{a\\to 1^-}\\left(1-\\sqrt{1-a^2}\\right)=1$.\n\nCâu 16. Theo tiêu chuẩn so sánh 2, tích phân $\\int_1^{+\\infty}\\frac{2x^3+x}{x^5+2x+1}\\,dx$ cùng tính hội tụ với tích phân nào sau đây?\nA. $\\int_1^{+\\infty}\\frac{x}{x^5}\\,dx$\nB. $\\int_1^{+\\infty}\\frac{dx}{x^3}$\nC. $\\int_1^{+\\infty}\\frac{2x^3}{x^5}\\,dx$\nD. $\\int_1^{+\\infty}\\frac{2}{x^2}\\,dx$\nĐáp án: D\nGiải thích: Tỉ số hai hàm dưới dấu tích phân dần tới $1\\ne 0$, nên cùng tính hội tụ với $\\int_1^{+\\infty}\\frac{2}{x^2}\\,dx$.\n\nCâu 17. Thể tích của khối tròn xoay khi quay hình phẳng được giới hạn bởi các đường $y=2x-x^2,\\ y=x^2$ quanh trục $Ox$ là\nA. $\\frac{7\\pi}{3}$\nB. $\\frac{1\\pi}{3}$\nC. $\\frac{-2\\pi}{3}$\nD. $\\frac{4\\pi}{3}$\nĐáp án: B\nGiải thích: $V=\\pi\\int_{0}^{1}\\left|(- x^{2} + 2 x)^2-(x^{2})^2\\right|dx=\\frac{1\\pi}{3}$.\n\nCâu 18. Nghiệm riêng của phương trình vi phân $y\'+\\frac{2}{x}y=x^3,\\ y(1)=1$ là\nA. $y=\\frac{x^{4}}{6} + 1 + \\frac{5}{6 x^{2}}$\nB. $y=\\frac{x^{6} + 5}{6 x^{2}}$\nC. $y=\\frac{x^{4}}{6}$\nD. $y=\\frac{- x^{6} - 5}{6 x^{2}}$\nĐáp án: B\nGiải thích: Nhân thừa số tích phân $\\mu(x)=x^{2}$, lấy tích phân rồi dùng $y(1)=1$: $y=\\frac{x^{6} + 5}{6 x^{2}}$.\n\nCâu 19. Tính diện tích miền phẳng giới hạn bởi 2 đường: $y=\\sin x,\\ y=0,\\ 0\\le x\\le\\pi$.\nA. $1$\nB. $2$\nC. $3$\nD. $4$\nĐáp án: B\nGiải thích: $S=\\int_{0}^{\\pi}\\left|(\\sin{\\left(x \\right)})-(0)\\right|dx=2$.\n\nCâu 20. Tích phân $I=\\int_1^3\\frac{dx}{(x-1)^{1/2}(3-x)^{1/2}}$ bằng\nA. $I=0$\nB. $I=\\pi$\nC. $I=1$\nD. $I=+\\infty$\nĐáp án: B\nGiải thích: $I=\\pi$.');
-  return [{id:'sample-kienthuc', name:'Kiến thức chung', questions:s1}, {id:'sample-tinhoc', name:'Tin học cơ bản', questions:s2}, {id:'tcc1-de256', name:'Toán cao cấp 1 – Đề 256', questions:s3}, {id:'tcc1-de256-photo', name:'Toán cao cấp 1 – Đề 256 (bản ảnh)', questions:s4}, {id:'tcc1-256style-01', name:'Toán cao cấp 1 – Đề 01 (kiểu 256)', questions:s5}, {id:'tcc1-256style-02', name:'Toán cao cấp 1 – Đề 02 (kiểu 256)', questions:s6}, {id:'tcc1-256style-03', name:'Toán cao cấp 1 – Đề 03 (kiểu 256)', questions:s7}, {id:'tcc1-256style-04', name:'Toán cao cấp 1 – Đề 04 (kiểu 256)', questions:s8}, {id:'tcc1-256style-05', name:'Toán cao cấp 1 – Đề 05 (kiểu 256)', questions:s9}];
+  return [{id:'sample-kienthuc', name:'Kiến thức chung', questions:s1}, {id:'sample-tinhoc', name:'Tin học cơ bản', questions:s2}, {id:'tcc1-de256', name:'Toán cao cấp 1 – Đề 256', questions:s3}, {id:'tcc1-de256-photo', name:'Toán cao cấp 1 – Đề 256 (bản ảnh)', questions:s4}, {id:'tcc1-256style-01', name:'Toán cao cấp 1 – Đề 01 (kiểu 256)', questions:s5.questions}, {id:'tcc1-256style-02', name:'Toán cao cấp 1 – Đề 02 (kiểu 256)', questions:s6.questions}, {id:'tcc1-256style-03', name:'Toán cao cấp 1 – Đề 03 (kiểu 256)', questions:s7.questions}, {id:'tcc1-256style-04', name:'Toán cao cấp 1 – Đề 04 (kiểu 256)', questions:s8.questions}, {id:'tcc1-256style-05', name:'Toán cao cấp 1 – Đề 05 (kiểu 256)', questions:s9.questions}];
 }
 $('restoreBtn').addEventListener('click', ()=>{ subjects=sampleSubjects(); save(); renderSubjects(); $('importMsg').innerHTML='<div class="ok">Đã khôi phục 9 môn mẫu, bấm “Luyện đề nhanh” là làm được ngay.</div>'; });
 
