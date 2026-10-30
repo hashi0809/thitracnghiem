@@ -39,17 +39,26 @@ body.fs-0{--fs:15px} body.fs-1{--fs:16.5px} body.fs-2{--fs:18px}
 .logo svg{width:30px;height:30px;color:var(--red)}
 .logo small{display:block;font-size:12px;font-weight:600;color:var(--ink-soft)}
 .nav{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-button{border:0;border-radius:12px;padding:12px 20px;font-size:var(--fs);cursor:pointer;
-  background:var(--red);color:#fff;font-weight:700;font-family:inherit;
-  box-shadow:0 10px 22px -10px rgba(29,36,64,.35);
-  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s,background .18s}
-button:hover{transform:translateY(-2px);background:var(--red-deep);box-shadow:0 14px 26px -10px rgba(29,36,64,.4)}
-button:active{transform:translateY(0) scale(.98)}
-button.secondary{background:transparent;color:var(--ink);border:1.5px solid var(--ink);box-shadow:none}
-button.secondary:hover{background:var(--ink);color:var(--paper2)}
-button.green{background:var(--green);box-shadow:0 10px 22px -10px rgba(29,36,64,.35)}
-button.green:hover{background:#156739}
-button.red{background:var(--red)}
+button{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.45);border-radius:14px;
+  padding:12px 20px;font-size:var(--fs);cursor:pointer;color:#fff;font-weight:700;font-family:inherit;
+  background:linear-gradient(180deg,rgba(214,76,54,.8),rgba(156,42,28,.68));
+  backdrop-filter:blur(16px) saturate(170%);-webkit-backdrop-filter:blur(16px) saturate(170%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 5px rgba(90,20,10,.18),0 10px 24px -10px rgba(29,36,64,.4);
+  transition:transform .18s cubic-bezier(.22,1,.36,1),box-shadow .18s,filter .18s}
+button::before{content:"";position:absolute;left:5%;right:5%;top:2px;height:44%;border-radius:999px;
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,0));pointer-events:none}
+button:hover{transform:translateY(-2px);filter:brightness(1.08);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -2px 5px rgba(90,20,10,.18),0 14px 28px -10px rgba(29,36,64,.45)}
+button:active{transform:translateY(0) scale(.97);filter:brightness(.96)}
+button.secondary{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.2));
+  color:var(--ink);border:1px solid rgba(29,36,64,.3);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.7),inset 0 -2px 5px rgba(29,36,64,.08),0 10px 24px -10px rgba(29,36,64,.3)}
+button.secondary:hover{background:linear-gradient(180deg,rgba(255,255,255,.68),rgba(255,255,255,.32));color:var(--ink)}
+button.green{background:linear-gradient(180deg,rgba(48,146,94,.8),rgba(21,103,57,.68));
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),inset 0 -2px 5px rgba(10,60,35,.2),0 10px 24px -10px rgba(29,36,64,.4)}
+button.green:hover{filter:brightness(1.08)}
+button.red{background:linear-gradient(180deg,rgba(214,76,54,.8),rgba(156,42,28,.68))}
+.opt::before,.navgrid button::before{display:none}
 button.small{padding:8px 14px;font-size:14px;border-radius:10px}
 header.hero{margin:26px auto 0;max-width:960px;background:var(--paper2);
   border:2px solid var(--ink);border-radius:20px;padding:34px 30px;position:relative;box-shadow:var(--shadow)}
@@ -193,9 +202,9 @@ body.dark ::-webkit-scrollbar-thumb{background:#3a4568;border-color:var(--paper)
 body.dark .topbar{background:#141b32;border-color:#f2ecdc}
 body.dark button.secondary{color:var(--ink);border-color:var(--ink)}
 body.dark button.secondary:hover{background:var(--ink);color:#11162a}
-body.dark button{box-shadow:0 10px 22px -10px rgba(0,0,0,.65)}
-body.dark button.green{box-shadow:0 10px 22px -10px rgba(0,0,0,.65)}
-body.dark button:hover{box-shadow:0 14px 26px -10px rgba(0,0,0,.7)}
+body.dark button{box-shadow:inset 0 1px 1px rgba(255,255,255,.35),inset 0 -2px 5px rgba(0,0,0,.28),0 10px 22px -10px rgba(0,0,0,.65)}
+body.dark button.secondary{background:linear-gradient(180deg,rgba(255,255,255,.17),rgba(255,255,255,.07));
+  color:var(--ink);border:1px solid rgba(255,255,255,.28)}
 body.dark input,body.dark select,body.dark textarea{background:#10162b;border-color:var(--line);color:var(--ink)}
 body.dark input::placeholder,body.dark textarea::placeholder{color:#6b7594}
 body.dark input[type="file"]{background:#141b32;color:var(--ink-soft)}
